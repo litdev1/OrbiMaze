@@ -23,6 +23,7 @@ import com.google.android.filament.RenderableManager
 import com.google.android.filament.VertexBuffer
 import com.google.android.filament.utils.Manipulator
 import dev.romainguy.kotlin.math.Float3
+import io.github.sceneview.collision.Vector3
 import io.github.sceneview.node.CubeNode
 import io.github.sceneview.node.CylinderNode
 import io.github.sceneview.node.LightNode
@@ -32,6 +33,7 @@ import java.nio.FloatBuffer
 import java.nio.ShortBuffer
 import io.github.sceneview.math.Position
 import io.github.sceneview.math.Size
+import java.nio.IntBuffer
 
 class SceneActivity : AppCompatActivity() {
     lateinit var sceneView: MainSceneView
@@ -121,7 +123,7 @@ class SceneActivity : AppCompatActivity() {
             .mapMinDistance(0.0f)
             .mapExtent(10.0f, 10.0f)
             .build(Manipulator.Mode.ORBIT)
-        sceneView.cameraManipulator = null
+        sceneView.cameraManipulator = manipulator
 
         val materialLoader = sceneView.materialLoader
 
@@ -162,7 +164,45 @@ class SceneActivity : AppCompatActivity() {
         )
         sceneView.addChildNode(cube)
 
-        makeCube()
+        //makeCube()
+
+        val pos1 = Vector3(0.0f, 0.0f, 0.0f)
+        val pos2 = Vector3(1.0f, 3.0f, 0.0f)
+        val dir1 = Vector3(1.0f, 0.0f, 0.0f)
+        val dir2 = Vector3(1.0f, 0.0f, 0.0f)
+
+        val cubicTube: CubicTube = CubicTube(pos1, pos2, dir1, dir2, 0.1f, 12, 20)
+        cubicTube.build()
+        val vertexBuffer = VertexBuffer.Builder()
+            .bufferCount(1)
+            .vertexCount(cubicTube.vertices.size)
+            .attribute(VertexBuffer.VertexAttribute.POSITION, 0, VertexBuffer.AttributeType.FLOAT3, 0, 28)
+            .attribute(VertexBuffer.VertexAttribute.TANGENTS, 0, VertexBuffer.AttributeType.FLOAT4, 12, 28)
+            .build(sceneView.engine)
+        val indexBuffer = IndexBuffer.Builder()
+            .indexCount(cubicTube.indices.size)
+            .bufferType(IndexBuffer.Builder.IndexType.UINT)
+            .build(sceneView.engine)
+        vertexBuffer.setBufferAt(sceneView.engine, 0, FloatBuffer.wrap(cubicTube.vertices))
+        indexBuffer.setBuffer(sceneView.engine, IntBuffer.wrap(cubicTube.indices))
+
+        val buffer = readAsset("materials/opaque_colored.filamat")
+        val material = Material.Builder().payload(buffer, buffer.remaining()).build(sceneView.engine)
+        val materialInstance = material.createInstance()
+        materialInstance.setParameter("color", Colors.RgbType.SRGB, 1.0f, 0.8f, 0.5f)
+        materialInstance.setParameter("metallic", 1.0f)
+        materialInstance.setParameter("roughness", 0.3f)
+        materialInstance.setParameter("reflectance", 0.8f)
+
+        val renderable = EntityManager.get().create()
+        RenderableManager.Builder(1)
+            .boundingBox(cubicTube.boundingBox)
+            .geometry(0, RenderableManager.PrimitiveType.TRIANGLES, vertexBuffer, indexBuffer)
+            .material(0, materialInstance)
+            .build(sceneView.engine, renderable)
+
+        sceneView.scene.addEntity(renderable)
+        FloatBuffer.wrap(cubicTube.vertices)
     }
 
     private fun updateUI() {

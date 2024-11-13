@@ -24,17 +24,17 @@ class MainSceneView @JvmOverloads constructor(
         setGestureListener()
     }
 
-    @SuppressLint("ClickableViewAccessibility")
-    override fun onTouchEvent(event: MotionEvent): Boolean {
-        if (!super.onTouchEvent(event)) {
-            when (event.action) {
-//                MotionEvent.ACTION_DOWN -> return true
-//                MotionEvent.ACTION_MOVE -> return true
-//                MotionEvent.ACTION_UP -> return true
-            }
-        }
-        return false
-    }
+//    @SuppressLint("ClickableViewAccessibility")
+//    override fun onTouchEvent(event: MotionEvent): Boolean {
+//        if (!super.onTouchEvent(event)) {
+//            when (event.action) {
+////                MotionEvent.ACTION_DOWN -> return true
+////                MotionEvent.ACTION_MOVE -> return true
+////                MotionEvent.ACTION_UP -> return true
+//            }
+//        }
+//        return false
+//    }
 
     var lastTimeNanos: Long = 0
     var fps: Int = 0
