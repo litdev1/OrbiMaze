@@ -37,7 +37,9 @@ class Generate(val nodes: MutableList<Node>,
                 )
             )
         }
-        while (tubes.size < count) {
+        var i = 0
+        while (tubes.size < count && i < 5*count) {
+            i++
             val node1 = nodes[rand.nextInt(count)]
             val node2 = nodes[rand.nextInt(count)]
             if (node1 == node2) continue

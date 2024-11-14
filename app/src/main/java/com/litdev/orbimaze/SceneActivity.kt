@@ -9,18 +9,17 @@ import android.os.Looper
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.graphics.blue
+import androidx.core.graphics.green
+import androidx.core.graphics.red
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
-import com.google.android.filament.Box
 import com.google.android.filament.Colors
 import com.google.android.filament.EntityManager
-import com.google.android.filament.IndexBuffer
 import com.google.android.filament.LightManager
 import com.google.android.filament.Material
-import com.google.android.filament.RenderableManager
-import com.google.android.filament.VertexBuffer
 import com.google.android.filament.utils.Manipulator
 import io.github.sceneview.math.Position
 import io.github.sceneview.math.Size
@@ -29,8 +28,6 @@ import io.github.sceneview.node.CylinderNode
 import io.github.sceneview.node.LightNode
 import io.github.sceneview.node.SphereNode
 import java.nio.ByteBuffer
-import java.nio.FloatBuffer
-import java.nio.ShortBuffer
 
 class SceneActivity : AppCompatActivity() {
     lateinit var sceneView: MainSceneView
@@ -193,11 +190,13 @@ class SceneActivity : AppCompatActivity() {
         val buffer = readAsset("materials/opaque_colored.filamat")
         val material = Material.Builder().payload(buffer, buffer.remaining()).build(sceneView.engine)
         val tubeMaterial = material.createInstance()
-        tubeMaterial.setParameter("color", Colors.RgbType.SRGB, 0.8f, 0.7f, 0.5f)
+        val gold = Color.parseColor("#ffd891")
+        val silver = Color.parseColor("#f7f4e8")
+        tubeMaterial.setParameter("color", Colors.RgbType.SRGB, gold.red/255.0f, gold.green/255.0f, gold.blue/255.0f)
         tubeMaterial.setParameter("metallic", 1.0f)
         tubeMaterial.setParameter("roughness", 0.1f)
         tubeMaterial.setParameter("reflectance", 0.8f)
-        val nodeMaterial = materialLoader.createColorInstance(color = Color.LTGRAY,
+        val nodeMaterial = materialLoader.createColorInstance(color = silver,
             metallic = 1.0f,
             roughness = 0.1f,
             reflectance = 0.8f

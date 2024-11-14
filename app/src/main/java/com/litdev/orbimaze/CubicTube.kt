@@ -19,6 +19,7 @@ import io.github.sceneview.math.Transform
 import io.github.sceneview.math.centerPosition
 import io.github.sceneview.math.halfExtentSize
 import io.github.sceneview.math.toFloat3
+import io.github.sceneview.math.toVector3Box
 import io.github.sceneview.node.SphereNode
 import java.nio.FloatBuffer
 import java.nio.IntBuffer
@@ -151,12 +152,13 @@ class CubicTube(val sceneView: MainSceneView,
             .geometry(0, RenderableManager.PrimitiveType.TRIANGLES, vertexBuffer, indexBuffer)
             .material(0, tubeMaterial)
             .build(sceneView.engine, renderable)
-
-        sceneView.scene.addEntity(renderable)
+        val renderNode = io.github.sceneview.node.RenderableNode(sceneView.engine, renderable)
+        renderNode.collisionShape = boundingBox.toVector3Box()
+        sceneView.addChildNode(renderNode)
     }
 
     fun buildNode(node: Node) {
-        val node = SphereNode(
+        val renderNode = SphereNode(
             engine = sceneView.engine,
             radius = 1.25f*radius,
             center = Position(x = node.pos.x, y = node.pos.y, z = node.pos.z),
@@ -164,7 +166,7 @@ class CubicTube(val sceneView: MainSceneView,
             stacks = 2*sides,
             slices = 2*sides
         )
-        sceneView.addChildNode(node)
+        sceneView.addChildNode(renderNode)
     }
 
     fun normalToTangent(normal: Float3): dev.romainguy.kotlin.math.Quaternion {
