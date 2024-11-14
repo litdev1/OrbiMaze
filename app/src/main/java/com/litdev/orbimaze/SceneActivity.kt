@@ -72,10 +72,13 @@ class SceneActivity : AppCompatActivity() {
             this?.intensity = 100000.0f
         }
         sceneView.indirectLight.apply {
-            this?.intensity = 100000.0f
+            this?.intensity = 10000.0f
         }
         sceneView.cameraNode.apply {
             position = Position(z = 10.0f)
+            focalLength = 28.0
+            near = 0.01f
+            far = 30.0f
         }
 
         val lightEntity1 = EntityManager.get().create()
@@ -87,7 +90,7 @@ class SceneActivity : AppCompatActivity() {
             build(sceneView.engine, lightEntity1)
         }
         val lightNode1 = LightNode(sceneView.engine, lightEntity1)
-        sceneView.addChildNode(lightNode1)
+//        sceneView.addChildNode(lightNode1)
 
         val lightEntity2 = EntityManager.get().create()
         LightManager.Builder(LightManager.Type.SPOT).apply {
@@ -101,11 +104,23 @@ class SceneActivity : AppCompatActivity() {
             build(sceneView.engine, lightEntity2)
         }
         val lightNode2 = LightNode(sceneView.engine, lightEntity2)
-        sceneView.addChildNode(lightNode2)
+//        sceneView.addChildNode(lightNode2)
+
+        val lightEntity3 = EntityManager.get().create()
+        LightManager.Builder(LightManager.Type.POINT).apply {
+            color(1.0f, 0.0f, 0.0f)
+            intensity(100000.0f)
+            position(3.0f, 3.0f, 3.0f)
+            falloff(10.0f)
+            castShadows(false)
+            build(sceneView.engine, lightEntity3)
+        }
+        val lightNode3 = LightNode(sceneView.engine, lightEntity3)
+//        sceneView.addChildNode(lightNode3)
 
         val manipulator = Manipulator.Builder()
             .viewport(sceneView.width, sceneView.height)
-            .mapMinDistance(-10f)
+            .mapMinDistance(0f)
             .targetPosition(0.0f, 1.0f, 0.0f)
             .orbitHomePosition(0.0f, 0.0f, 10.0f)
             .zoomSpeed(0.03f)
@@ -137,7 +152,7 @@ class SceneActivity : AppCompatActivity() {
             )
         )
         cylinder.position = Position(x = -1.0f, y = 1.0f, z = 0.0f)
-        sceneView.addChildNode(cylinder)
+//        sceneView.addChildNode(cylinder)
 
         val sphere = SphereNode(
             engine = sceneView.engine,
@@ -161,7 +176,7 @@ class SceneActivity : AppCompatActivity() {
                 reflectance = 1.0f
             )
         )
-        sceneView.addChildNode(cube)
+//        sceneView.addChildNode(cube)
 
         val buffer = readAsset("materials/opaque_colored.filamat")
         val material = Material.Builder().payload(buffer, buffer.remaining()).build(sceneView.engine)
@@ -177,6 +192,7 @@ class SceneActivity : AppCompatActivity() {
         )
 
         Generate(nodes, tubes).simple()
+        Generate(nodes, tubes).random(1000)
 
         val cubicTube: CubicTube = CubicTube(sceneView, tubeMaterial, nodeMaterial, 0.05f, 12, 20)
         for (tube in tubes) {
