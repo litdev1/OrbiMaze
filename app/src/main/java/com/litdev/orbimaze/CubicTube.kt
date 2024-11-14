@@ -45,9 +45,9 @@ class CubicTube(val sceneView: MainSceneView,
         var dirY = 0.0f
         var dirZ = sign(pos2.z - pos1.z)
         if (abs(pos2.x - pos1.x) >= abs(pos2.z - pos1.z)) {
-            dirZ = 0.0f;
+            dirZ = 0.0f
         } else {
-            dirX = 0.0f;
+            dirX = 0.0f
         }
         val dir1 = Vector3(dirX, dirY, dirZ).normalized()
         val dir2 = dir1

@@ -162,8 +162,6 @@ class SceneActivity : AppCompatActivity() {
         )
         sceneView.addChildNode(cube)
 
-        //makeCube()
-
         val buffer = readAsset("materials/opaque_colored.filamat")
         val material = Material.Builder().payload(buffer, buffer.remaining()).build(sceneView.engine)
         val tubeMaterial = material.createInstance()
@@ -189,7 +187,7 @@ class SceneActivity : AppCompatActivity() {
     }
 
     private fun updateUI() {
-        textView.text = sceneView.fps.toString() + " fps"
+        textView.text = String.format("%d fps", sceneView.fps)
     }
 
     private fun Activity.setFullScreen(
@@ -220,61 +218,6 @@ class SceneActivity : AppCompatActivity() {
                 }
             }
         }
-    }
-
-    private fun makeCube() {
-        val vertexBuffer = VertexBuffer.Builder()
-            .bufferCount(1)
-            .vertexCount(8)
-            .attribute(VertexBuffer.VertexAttribute.POSITION, 0, VertexBuffer.AttributeType.FLOAT3, 0, 12)
-            .build(sceneView.engine)
-
-        val indexBuffer = IndexBuffer.Builder()
-            .indexCount(36)
-            .bufferType(IndexBuffer.Builder.IndexType.USHORT)
-            .build(sceneView.engine)
-
-        val vertices = floatArrayOf(
-            // positions for the 8 vertices of the cube
-            -1.0f, -1.0f, -1.0f,
-            1.0f, -1.0f, -1.0f,
-            1.0f,  1.0f, -1.0f,
-            -1.0f,  1.0f, -1.0f,
-            -1.0f, -1.0f,  1.0f,
-            1.0f, -1.0f,  1.0f,
-            1.0f,  1.0f,  1.0f,
-            -1.0f,  1.0f,  1.0f
-        )
-
-        val indices = shortArrayOf(
-            // indices for the 12 triangles of the cube
-            0, 1, 2, 0, 2, 3,
-            4, 5, 6, 4, 6, 7,
-            0, 1, 5, 0, 5, 4,
-            2, 3, 7, 2, 7, 6,
-            0, 3, 7, 0, 7, 4,
-            1, 2, 6, 1, 6, 5
-        )
-
-        vertexBuffer.setBufferAt(sceneView.engine, 0, FloatBuffer.wrap(vertices))
-        indexBuffer.setBuffer(sceneView.engine, ShortBuffer.wrap(indices))
-
-        val buffer = readAsset("materials/opaque_colored.filamat")
-        val material = Material.Builder().payload(buffer, buffer.remaining()).build(sceneView.engine)
-        val materialInstance = material.createInstance()
-        materialInstance.setParameter("color", Colors.RgbType.SRGB, 1.0f, 0.85f, 0.57f)
-        materialInstance.setParameter("metallic", 0.0f)
-        materialInstance.setParameter("roughness", 0.3f)
-        materialInstance.setParameter("reflectance", 0.3f)
-
-        val renderable = EntityManager.get().create()
-        RenderableManager.Builder(1)
-            .boundingBox(Box(0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f))
-            .geometry(0, RenderableManager.PrimitiveType.TRIANGLES, vertexBuffer, indexBuffer)
-            .material(0, materialInstance)
-            .build(sceneView.engine, renderable)
-
-        sceneView.scene.addEntity(renderable)
     }
 
     private fun readAsset(assetName: String): ByteBuffer {
