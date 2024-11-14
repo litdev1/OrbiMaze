@@ -1,46 +1,39 @@
 package com.litdev.orbimaze
 
-import android.graphics.Color
 import com.google.android.filament.Box
-import com.google.android.filament.Colors
 import com.google.android.filament.EntityManager
 import com.google.android.filament.IndexBuffer
-import com.google.android.filament.Material
 import com.google.android.filament.MaterialInstance
 import com.google.android.filament.RenderableManager
 import com.google.android.filament.VertexBuffer
 import dev.romainguy.kotlin.math.Float3
-import dev.romainguy.kotlin.math.Mat4
 import dev.romainguy.kotlin.math.cross
 import dev.romainguy.kotlin.math.dot
 import dev.romainguy.kotlin.math.normalize
 import dev.romainguy.kotlin.math.pow
-import io.github.sceneview.collision.Vector3
 import io.github.sceneview.collision.Quaternion
-import io.github.sceneview.math.Position
-import java.nio.FloatBuffer
-import dev.romainguy.kotlin.math.rotation
+import io.github.sceneview.collision.Vector3
 import io.github.sceneview.math.Direction
+import io.github.sceneview.math.Position
 import io.github.sceneview.math.Transform
 import io.github.sceneview.math.centerPosition
 import io.github.sceneview.math.halfExtentSize
 import io.github.sceneview.math.toFloat3
 import io.github.sceneview.node.SphereNode
-import java.nio.ByteBuffer
+import java.nio.FloatBuffer
 import java.nio.IntBuffer
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.sign
 
-class CubicTube(sceneView: MainSceneView, tubeMaterial : MaterialInstance, nodeMaterial : MaterialInstance, radius: Float, sides: Int, segments: Int) {
-    val sceneView = sceneView
-    val tubeMaterial = tubeMaterial
-    val nodeMaterial = nodeMaterial
-    val radius = radius
-    val sides = sides
-    val segments = segments
-
+class CubicTube(val sceneView: MainSceneView,
+                val tubeMaterial: MaterialInstance,
+                val nodeMaterial: MaterialInstance,
+                val radius: Float,
+                val sides: Int,
+                val segments: Int
+) {
     val vertices: FloatArray = FloatArray((segments + 1) * sides * 7)
     val indices: IntArray = IntArray(segments * sides * 2 * 3)
     val boundingBox = Box()

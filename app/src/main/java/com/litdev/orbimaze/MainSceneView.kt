@@ -1,11 +1,8 @@
 package com.litdev.orbimaze
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.util.AttributeSet
 import android.view.MotionEvent
-import android.widget.ImageView
-import android.widget.TextView
 import dev.romainguy.kotlin.math.Float2
 import io.github.sceneview.SceneView
 import io.github.sceneview.gesture.GestureDetector.OnGestureListener

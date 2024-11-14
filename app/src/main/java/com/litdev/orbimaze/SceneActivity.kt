@@ -7,7 +7,6 @@ import android.os.Handler
 import android.os.Looper
 import android.view.View
 import android.widget.TextView
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
@@ -22,8 +21,8 @@ import com.google.android.filament.Material
 import com.google.android.filament.RenderableManager
 import com.google.android.filament.VertexBuffer
 import com.google.android.filament.utils.Manipulator
-import dev.romainguy.kotlin.math.Float3
-import io.github.sceneview.collision.Vector3
+import io.github.sceneview.math.Position
+import io.github.sceneview.math.Size
 import io.github.sceneview.node.CubeNode
 import io.github.sceneview.node.CylinderNode
 import io.github.sceneview.node.LightNode
@@ -31,9 +30,6 @@ import io.github.sceneview.node.SphereNode
 import java.nio.ByteBuffer
 import java.nio.FloatBuffer
 import java.nio.ShortBuffer
-import io.github.sceneview.math.Position
-import io.github.sceneview.math.Size
-import java.nio.IntBuffer
 
 class SceneActivity : AppCompatActivity() {
     lateinit var sceneView: MainSceneView

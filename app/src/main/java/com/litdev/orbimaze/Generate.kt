@@ -2,9 +2,8 @@ package com.litdev.orbimaze
 
 import io.github.sceneview.collision.Vector3
 
-class Generate(nodes: MutableList<Node>, tubes: MutableList<Tube>) {
-    val nodes = nodes
-    val tubes = tubes
+class Generate(val nodes: MutableList<Node>,
+               val tubes: MutableList<Tube>) {
 
     fun simple() {
         nodes.clear()
