@@ -1,5 +1,6 @@
 package com.litdev.orbimaze
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.graphics.Color
 import android.os.Bundle
@@ -186,6 +187,7 @@ class SceneActivity : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("DefaultLocale")
     private fun updateUI() {
         textView.text = String.format("%d fps", sceneView.fps)
     }
