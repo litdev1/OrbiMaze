@@ -38,6 +38,8 @@ import java.nio.IntBuffer
 class SceneActivity : AppCompatActivity() {
     lateinit var sceneView: MainSceneView
     lateinit var textView: TextView
+    val nodes = mutableListOf<Node>()
+    val tubes = mutableListOf<Tube>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -166,43 +168,28 @@ class SceneActivity : AppCompatActivity() {
 
         //makeCube()
 
-        val pos1 = Vector3(0.0f, 0.0f, 0.0f)
-        val pos2 = Vector3(1.0f, 3.0f, 0.0f)
-        val dir1 = Vector3(1.0f, 0.0f, 0.0f)
-        val dir2 = Vector3(1.0f, 0.0f, 0.0f)
-
-        val cubicTube: CubicTube = CubicTube(pos1, pos2, dir1, dir2, 0.1f, 12, 20)
-        cubicTube.build()
-        val vertexBuffer = VertexBuffer.Builder()
-            .bufferCount(1)
-            .vertexCount(cubicTube.vertices.size)
-            .attribute(VertexBuffer.VertexAttribute.POSITION, 0, VertexBuffer.AttributeType.FLOAT3, 0, 28)
-            .attribute(VertexBuffer.VertexAttribute.TANGENTS, 0, VertexBuffer.AttributeType.FLOAT4, 12, 28)
-            .build(sceneView.engine)
-        val indexBuffer = IndexBuffer.Builder()
-            .indexCount(cubicTube.indices.size)
-            .bufferType(IndexBuffer.Builder.IndexType.UINT)
-            .build(sceneView.engine)
-        vertexBuffer.setBufferAt(sceneView.engine, 0, FloatBuffer.wrap(cubicTube.vertices))
-        indexBuffer.setBuffer(sceneView.engine, IntBuffer.wrap(cubicTube.indices))
-
         val buffer = readAsset("materials/opaque_colored.filamat")
         val material = Material.Builder().payload(buffer, buffer.remaining()).build(sceneView.engine)
-        val materialInstance = material.createInstance()
-        materialInstance.setParameter("color", Colors.RgbType.SRGB, 1.0f, 0.8f, 0.5f)
-        materialInstance.setParameter("metallic", 1.0f)
-        materialInstance.setParameter("roughness", 0.3f)
-        materialInstance.setParameter("reflectance", 0.8f)
+        val tubeMaterial = material.createInstance()
+        tubeMaterial.setParameter("color", Colors.RgbType.SRGB, 0.8f, 0.7f, 0.5f)
+        tubeMaterial.setParameter("metallic", 1.0f)
+        tubeMaterial.setParameter("roughness", 0.1f)
+        tubeMaterial.setParameter("reflectance", 0.8f)
+        val nodeMaterial = materialLoader.createColorInstance(color = Color.LTGRAY,
+            metallic = 1.0f,
+            roughness = 0.1f,
+            reflectance = 0.8f
+        )
 
-        val renderable = EntityManager.get().create()
-        RenderableManager.Builder(1)
-            .boundingBox(cubicTube.boundingBox)
-            .geometry(0, RenderableManager.PrimitiveType.TRIANGLES, vertexBuffer, indexBuffer)
-            .material(0, materialInstance)
-            .build(sceneView.engine, renderable)
+        Generate(nodes, tubes).simple()
 
-        sceneView.scene.addEntity(renderable)
-        FloatBuffer.wrap(cubicTube.vertices)
+        val cubicTube: CubicTube = CubicTube(sceneView, tubeMaterial, nodeMaterial, 0.05f, 12, 20)
+        for (tube in tubes) {
+            cubicTube.buildTube(tube)
+        }
+        for (node in nodes) {
+            cubicTube.buildNode(node)
+        }
     }
 
     private fun updateUI() {
