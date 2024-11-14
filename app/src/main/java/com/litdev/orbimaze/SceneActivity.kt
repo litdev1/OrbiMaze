@@ -68,61 +68,68 @@ class SceneActivity : AppCompatActivity() {
     }
 
     private fun initialiseScene() {
+//        val bloomOptions = com.google.android.filament.View.BloomOptions()
+//        bloomOptions.enabled = true
+//        sceneView.view.bloomOptions = bloomOptions
+        val fogOptions = com.google.android.filament.View.FogOptions()
+        fogOptions.enabled = true
+        sceneView.view.fogOptions = fogOptions
+
         sceneView.mainLightNode.apply {
-            this?.intensity = 100000.0f
+            this?.intensity = 10000.0f
         }
         sceneView.indirectLight.apply {
             this?.intensity = 10000.0f
         }
         sceneView.cameraNode.apply {
-            position = Position(z = 10.0f)
+            position = Position(x = 3.0f, y = 3.0f, z = 10.0f)
             focalLength = 28.0
             near = 0.01f
             far = 30.0f
         }
 
-        val lightEntity1 = EntityManager.get().create()
-        LightManager.Builder(LightManager.Type.DIRECTIONAL).apply {
-            color(1.0f, 1.0f, 1.0f)
-            intensity(100_000.0f)
-            direction(1.0f, -1.0f, 0.0f)
-            castShadows(true)
-            build(sceneView.engine, lightEntity1)
-        }
-        val lightNode1 = LightNode(sceneView.engine, lightEntity1)
+//        val lightEntity1 = EntityManager.get().create()
+//        LightManager.Builder(LightManager.Type.DIRECTIONAL).apply {
+//            color(1.0f, 1.0f, 1.0f)
+//            intensity(100_000.0f)
+//            direction(1.0f, -1.0f, 0.0f)
+//            castShadows(true)
+//            build(sceneView.engine, lightEntity1)
+//        }
+//        val lightNode1 = LightNode(sceneView.engine, lightEntity1)
 //        sceneView.addChildNode(lightNode1)
 
-        val lightEntity2 = EntityManager.get().create()
-        LightManager.Builder(LightManager.Type.SPOT).apply {
-            color(1.0f, 1.0f, 1.0f)
-            intensity(100_000.0f)
-            direction(-1.0f, 0.0f, 0.0f)
-            position(2.0f, 0.0f, 0.0f)
-            falloff(10.0f)
-            spotLightCone(0.5f, 1.0f)
-            castShadows(true)
-            build(sceneView.engine, lightEntity2)
-        }
-        val lightNode2 = LightNode(sceneView.engine, lightEntity2)
+//        val lightEntity2 = EntityManager.get().create()
+//        LightManager.Builder(LightManager.Type.SPOT).apply {
+//            color(1.0f, 1.0f, 1.0f)
+//            intensity(100_000.0f)
+//            direction(-1.0f, 0.0f, 0.0f)
+//            position(2.0f, 0.0f, 0.0f)
+//            falloff(10.0f)
+//            spotLightCone(0.5f, 1.0f)
+//            castShadows(true)
+//            build(sceneView.engine, lightEntity2)
+//        }
+//        val lightNode2 = LightNode(sceneView.engine, lightEntity2)
 //        sceneView.addChildNode(lightNode2)
 
         val lightEntity3 = EntityManager.get().create()
         LightManager.Builder(LightManager.Type.POINT).apply {
             color(1.0f, 0.0f, 0.0f)
-            intensity(100000.0f)
+            intensity(100000000.0f)
             position(3.0f, 3.0f, 3.0f)
-            falloff(10.0f)
-            castShadows(false)
+            falloff(3.0f)
+            castShadows(true)
             build(sceneView.engine, lightEntity3)
         }
         val lightNode3 = LightNode(sceneView.engine, lightEntity3)
-//        sceneView.addChildNode(lightNode3)
+        sceneView.addChildNode(lightNode3)
 
         val manipulator = Manipulator.Builder()
             .viewport(sceneView.width, sceneView.height)
             .mapMinDistance(0f)
-            .targetPosition(0.0f, 1.0f, 0.0f)
-            .orbitHomePosition(0.0f, 0.0f, 10.0f)
+            .targetPosition(3.0f, 3.0f, 3.0f)
+            .orbitHomePosition(3.0f, 3.0f, 10.0f)
             .zoomSpeed(0.03f)
             .orbitSpeed(0.004f, 0.004f)
             .farPlane(100.0f)
@@ -130,7 +137,7 @@ class SceneActivity : AppCompatActivity() {
             .flightPanSpeed(0.001f, 0.001f)
             .flightSpeedSteps(80)
             .flightMoveDamping(15.0f)
-            .flightStartPosition(0.0f,0.0f,10.0f)
+            .flightStartPosition(3.0f,3.0f,10.0f)
             .flightStartOrientation(0.0f, 0.0f)
             .fovDegrees(33.00f)
             .fovDirection(Manipulator.Fov.VERTICAL)
@@ -141,41 +148,46 @@ class SceneActivity : AppCompatActivity() {
 
         val materialLoader = sceneView.materialLoader
 
-        val cylinder = CylinderNode(
-            engine = sceneView.engine,
-            radius = 0.2f,
-            height = 2.0f,
-            materialInstance = materialLoader.createColorInstance(color = Color.RED,
-                metallic = 0.5f,
-                roughness = 0.2f,
-                reflectance = 0.4f
-            )
-        )
-        cylinder.position = Position(x = -1.0f, y = 1.0f, z = 0.0f)
+//        val cylinder = CylinderNode(
+//            engine = sceneView.engine,
+//            radius = 0.2f,
+//            height = 2.0f,
+//            materialInstance = materialLoader.createColorInstance(color = Color.RED,
+//                metallic = 0.5f,
+//                roughness = 0.2f,
+//                reflectance = 0.4f
+//            )
+//        )
+//        cylinder.position = Position(x = -1.0f, y = 1.0f, z = 0.0f)
 //        sceneView.addChildNode(cylinder)
+
+        val buffer1 = readAsset("materials/emissive_colored.filamat")
+        val material1 = Material.Builder().payload(buffer1, buffer1.remaining()).build(sceneView.engine)
+        val materialInstance1 = material1.createInstance()
+        materialInstance1.setParameter("color", Colors.RgbType.SRGB, 1.0f, 0.0f, 0.0f)
+        materialInstance1.setParameter("metallic", 1.0f)
+        materialInstance1.setParameter("roughness", 0.0f)
+        materialInstance1.setParameter("reflectance", 1.0f)
+        materialInstance1.setParameter("emissive", Colors.RgbType.SRGB, 1.0f, 0.0f, 0.0f)
 
         val sphere = SphereNode(
             engine = sceneView.engine,
-            radius = 0.2f,
-            center = Position(x = 0.0f, y = 0.0f, z = 0.0f),
-            materialInstance = materialLoader.createColorInstance(color = Color.GREEN,
-                metallic = 0.5f,
-                roughness = 0.2f,
-                reflectance = 0.4f
-            )
+            radius = 0.1f,
+            center = Position(x = 3.0f, y = 3.0f, z = 3.0f),
+            materialInstance = materialInstance1
         )
         sceneView.addChildNode(sphere)
 
-        val cube = CubeNode(
-            engine = sceneView.engine,
-            size = Size(1.0f, 1.0f, 1.0f),
-            center = Position(x = 1.0f, y = -1.0f, z = 0.0f),
-            materialInstance = materialLoader.createColorInstance(color = Color.BLUE,
-                metallic = 1.0f,
-                roughness = 0.0f,
-                reflectance = 1.0f
-            )
-        )
+//        val cube = CubeNode(
+//            engine = sceneView.engine,
+//            size = Size(1.0f, 1.0f, 1.0f),
+//            center = Position(x = 1.0f, y = -1.0f, z = 0.0f),
+//            materialInstance = materialLoader.createColorInstance(color = Color.BLUE,
+//                metallic = 1.0f,
+//                roughness = 0.0f,
+//                reflectance = 1.0f
+//            )
+//        )
 //        sceneView.addChildNode(cube)
 
         val buffer = readAsset("materials/opaque_colored.filamat")
