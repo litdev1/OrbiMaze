@@ -14,6 +14,7 @@ import dev.romainguy.kotlin.math.pow
 import io.github.sceneview.collision.Quaternion
 import io.github.sceneview.collision.Vector3
 import io.github.sceneview.math.Direction
+import io.github.sceneview.math.Position
 import io.github.sceneview.math.Transform
 import io.github.sceneview.math.centerPosition
 import io.github.sceneview.math.halfExtentSize
@@ -30,7 +31,8 @@ var nextTubeId: Int = 0
 class Tube(val node1: Node,
            val node2: Node) {
     var id: Int = 0
-    lateinit var startDirection: Vector3
+    var length: Float = 0.0f
+    var startDirection: Vector3 = Vector3.zero()
     lateinit var A: Vector3
     lateinit var B: Vector3
     lateinit var C: Vector3
@@ -41,7 +43,6 @@ class Tube(val node1: Node,
         id = nextTubeId++
         node1.tubes.add(this)
         node2.tubes.add(this)
-        startDirection = Vector3.zero()
     }
 
     fun build(sceneView: MainSceneView,
@@ -79,6 +80,10 @@ class Tube(val node1: Node,
             dir1.y + dir2.y - 2 * (pos2.y - pos1.y),
             dir1.z + dir2.z - 2 * (pos2.z - pos1.z)
         )
+        length = Vector3(
+            A.x + B.x/2.0f + C.x/3.0f + D.x/4.0f,
+            A.y + B.y/2.0f + C.y/3.0f + D.y/4.0f,
+            A.z + B.z/2.0f + C.z/3.0f + D.z/4.0f).length()
 
         val min = Vector3(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE)
         val max = Vector3(-Float.MAX_VALUE, -Float.MAX_VALUE, -Float.MAX_VALUE)
@@ -86,8 +91,8 @@ class Tube(val node1: Node,
         for (i in 0..segments) {
             var r = i.toFloat() / segments //parametric distance along the curve
             val radScale = radius * (0.25f + 0.75f * pow(2 * abs(r - 0.5f), 2.0f))
-            val pos = point(r) //position vector
-            val dir = direction(r) //direction vector
+            val pos = pointV(r) //position vector
+            val dir = directionV(r) //direction vector
             var rad = Vector3.cross(dir, Vector3(0.0f, 1.0f, 0.0f)) //vector in radial direction
             if (Vector3.dot(rad, rad) == 0.0f) {
                 rad = Vector3.cross(dir, Vector3(1.0f, 0.0f, 0.0f))
@@ -185,7 +190,7 @@ class Tube(val node1: Node,
         return Transform(right = tangent, up = bitangent, forward = normal).toQuaternion()
     }
 
-    fun point(r: Float) : Vector3 {
+    fun pointV(r: Float) : Vector3 {
         return Vector3(
             A.x + B.x * r + C.x * r * r + D.x * r * r * r,
             A.y + B.y * r + C.y * r * r + D.y * r * r * r,
@@ -193,7 +198,7 @@ class Tube(val node1: Node,
         )
     }
 
-    fun direction(r: Float) : Vector3 {
+    fun directionV(r: Float) : Vector3 {
         return Vector3(
             B.x + 2 * C.x * r + 3 * D.x * r * r,
             B.y + 2 * C.y * r + 3 * D.y * r * r,
@@ -201,8 +206,15 @@ class Tube(val node1: Node,
         ).normalized()
     }
 
+    fun pointP(r: Float) : Position {
+        return Position(
+            A.x + B.x * r + C.x * r * r + D.x * r * r * r,
+            A.y + B.y * r + C.y * r * r + D.y * r * r * r,
+            A.z + B.z * r + C.z * r * r + D.z * r * r * r
+        )
+    }
 
-    fun initStartDirection(direction: Vector3)
+    fun startDirectionSet(direction: Vector3)
     {
         startDirection = direction
     }

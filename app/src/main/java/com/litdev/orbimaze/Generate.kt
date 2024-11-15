@@ -86,20 +86,20 @@ class Generate(val nodes: MutableList<Node>,
                     if (i < nx - 1) {
                         val nodeX = nodes[ijk + 1]
                         val tube = Tube(node, nodeX)
-                        tube.initStartDirection(Vector3(1.0f, 0.0f, 0.0f))
+                        tube.startDirectionSet(Vector3(1.0f, 0.0f, 0.0f))
                         tubes.add(tube)
                     }
                     if (j < ny - 1) {
                         val nodeY = nodes[ijk + ny]
                         val tube = Tube(node, nodeY)
-                        tube.initStartDirection(Vector3(0.0f, 1.0f, 0.0f))
+                        tube.startDirectionSet(Vector3(0.0f, 1.0f, 0.0f))
                         tubes.add(tube)
 
                     }
                     if (k < nz - 1) {
                         val nodeZ = nodes[ijk + ny * nz]
                         val tube = Tube(node, nodeZ)
-                        tube.initStartDirection(Vector3(0.0f, 0.0f, 1.0f))
+                        tube.startDirectionSet(Vector3(0.0f, 0.0f, 1.0f))
                         tubes.add(tube)
                     }
                 }
@@ -146,5 +146,3 @@ class Generate(val nodes: MutableList<Node>,
         }
     }
 }
-
-private fun Tube.setstartDirection(vector3: Vector3) {}

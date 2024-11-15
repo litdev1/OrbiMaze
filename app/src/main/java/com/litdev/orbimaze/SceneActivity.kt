@@ -9,6 +9,7 @@ import android.os.Looper
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.graphics.blue
 import androidx.core.graphics.green
 import androidx.core.graphics.red
@@ -21,6 +22,7 @@ import com.google.android.filament.EntityManager
 import com.google.android.filament.LightManager
 import com.google.android.filament.Material
 import com.google.android.filament.utils.Manipulator
+import dev.romainguy.kotlin.math.Float3
 import io.github.sceneview.math.Position
 import io.github.sceneview.math.Size
 import io.github.sceneview.node.CubeNode
@@ -29,11 +31,14 @@ import io.github.sceneview.node.LightNode
 import io.github.sceneview.node.SphereNode
 import java.nio.ByteBuffer
 
+lateinit var sceneActivity: SceneActivity
+
 class SceneActivity : AppCompatActivity() {
     lateinit var sceneView: MainSceneView
     lateinit var textView: TextView
     val nodes = mutableListOf<Node>()
     val tubes = mutableListOf<Tube>()
+    val player: Orb = Orb()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,6 +50,7 @@ class SceneActivity : AppCompatActivity() {
             insets
         }
 
+        sceneActivity = this
         setFullScreen(
             findViewById(R.id.main)
         )
@@ -110,18 +116,6 @@ class SceneActivity : AppCompatActivity() {
 //        val lightNode2 = LightNode(sceneView.engine, lightEntity2)
 //        sceneView.addChildNode(lightNode2)
 
-        val lightEntity3 = EntityManager.get().create()
-        LightManager.Builder(LightManager.Type.POINT).apply {
-            color(1.0f, 0.0f, 0.0f)
-            intensity(100000000.0f)
-            position(3.0f, 3.0f, 3.0f)
-            falloff(3.0f)
-            castShadows(true)
-            build(sceneView.engine, lightEntity3)
-        }
-        val lightNode3 = LightNode(sceneView.engine, lightEntity3)
-        sceneView.addChildNode(lightNode3)
-
         val manipulator = Manipulator.Builder()
             .viewport(sceneView.width, sceneView.height)
             .mapMinDistance(0f)
@@ -143,60 +137,16 @@ class SceneActivity : AppCompatActivity() {
             .build(Manipulator.Mode.ORBIT)
         sceneView.cameraManipulator = manipulator
 
+        val gold = ContextCompat.getColor(this, R.color.gold)
+        val silver = ContextCompat.getColor(this, R.color.silver)
+
         val materialLoader = sceneView.materialLoader
-
-//        val cylinder = CylinderNode(
-//            engine = sceneView.engine,
-//            radius = 0.2f,
-//            height = 2.0f,
-//            materialInstance = materialLoader.createColorInstance(color = Color.RED,
-//                metallic = 0.5f,
-//                roughness = 0.2f,
-//                reflectance = 0.4f
-//            )
-//        )
-//        cylinder.position = Position(x = -1.0f, y = 1.0f, z = 0.0f)
-//        sceneView.addChildNode(cylinder)
-
-        val buffer1 = readAsset("materials/emissive_colored.filamat")
-        val material1 = Material.Builder().payload(buffer1, buffer1.remaining()).build(sceneView.engine)
-        val materialInstance1 = material1.createInstance()
-        materialInstance1.setParameter("color", Colors.RgbType.SRGB, 1.0f, 0.0f, 0.0f)
-        materialInstance1.setParameter("metallic", 1.0f)
-        materialInstance1.setParameter("roughness", 0.0f)
-        materialInstance1.setParameter("reflectance", 1.0f)
-        materialInstance1.setParameter("emissive", Colors.RgbType.SRGB, 1.0f, 0.0f, 0.0f)
-
-        val sphere = SphereNode(
-            engine = sceneView.engine,
-            radius = 0.1f,
-            center = Position(x = 3.0f, y = 3.0f, z = 3.0f),
-            materialInstance = materialInstance1
-        )
-        sceneView.addChildNode(sphere)
-
-//        val cube = CubeNode(
-//            engine = sceneView.engine,
-//            size = Size(1.0f, 1.0f, 1.0f),
-//            center = Position(x = 1.0f, y = -1.0f, z = 0.0f),
-//            materialInstance = materialLoader.createColorInstance(color = Color.BLUE,
-//                metallic = 1.0f,
-//                roughness = 0.0f,
-//                reflectance = 1.0f
-//            )
-//        )
-//        sceneView.addChildNode(cube)
-
-        val buffer = readAsset("materials/opaque_colored.filamat")
-        val material = Material.Builder().payload(buffer, buffer.remaining()).build(sceneView.engine)
-        val tubeMaterial = material.createInstance()
-        val gold = Color.parseColor("#ffd891")
-        val silver = Color.parseColor("#f7f4e8")
-        tubeMaterial.setParameter("color", Colors.RgbType.SRGB, gold.red/255.0f, gold.green/255.0f, gold.blue/255.0f)
-        tubeMaterial.setParameter("metallic", 1.0f)
-        tubeMaterial.setParameter("roughness", 0.1f)
-        tubeMaterial.setParameter("reflectance", 0.8f)
         val nodeMaterial = materialLoader.createColorInstance(color = silver,
+            metallic = 1.0f,
+            roughness = 0.1f,
+            reflectance = 0.8f
+        )
+        val tubeMaterial = materialLoader.createColorInstance(color = gold,
             metallic = 1.0f,
             roughness = 0.1f,
             reflectance = 0.8f
@@ -212,6 +162,13 @@ class SceneActivity : AppCompatActivity() {
         for (node in nodes) {
             node.build(sceneView, nodeMaterial, 24, 24, 0.0625f)
         }
+
+        val buffer = readAsset("materials/emissive_colored.filamat")
+        val material = Material.Builder().payload(buffer, buffer.remaining()).build(sceneView.engine)
+        val materialInstance = material.createInstance()
+        player.build(sceneView, materialInstance, Color.RED, 0.1f, 2.0f)
+        player.positionSet(Position(x = 3.0f, y = 3.0f, z = 3.0f))
+        player.tubeSet(tubes[0], 1, 0.01f)
     }
 
     @SuppressLint("DefaultLocale")
@@ -253,5 +210,12 @@ class SceneActivity : AppCompatActivity() {
         input.read(bytes)
         return ByteBuffer.wrap(bytes)
     }
+
+    fun update(dt: Float) {
+        if (dt > 1.0f) return
+        player.r += player.dir * player.speed * dt / player.tube.length
+        player.positionSet(player.tube.pointP(player.r))
+    }
 }
+
 

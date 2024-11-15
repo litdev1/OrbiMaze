@@ -43,6 +43,8 @@ class MainSceneView @JvmOverloads constructor(
         val deltaTime = (frameTimeNanos - lastTimeNanos) / 1000000
         fps = (1000 / deltaTime).toInt()
         lastTimeNanos = frameTimeNanos
+
+        sceneActivity.update(deltaTime.toFloat()/1000.0f)
     }
 
     fun setGestureListener() {
@@ -72,7 +74,7 @@ class MainSceneView @JvmOverloads constructor(
                 e: MotionEvent,
                 node: Node?
             ) {
-                cameraNode.position += Position(0f, 0f, -1f)
+
             }
 
             override fun onFling(
