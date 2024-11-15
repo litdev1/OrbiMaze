@@ -28,7 +28,6 @@ import io.github.sceneview.node.CylinderNode
 import io.github.sceneview.node.LightNode
 import io.github.sceneview.node.SphereNode
 import java.nio.ByteBuffer
-import java.nio.channels.NotYetConnectedException
 
 class SceneActivity : AppCompatActivity() {
     lateinit var sceneView: MainSceneView
@@ -205,13 +204,13 @@ class SceneActivity : AppCompatActivity() {
 
 //        Generate(nodes, tubes).simple()
 //        Generate(nodes, tubes).random(100)
-        Generate(nodes, tubes).cube(7, 7, 7, 0.3f)
+        Generate(nodes, tubes).cube(7, 7, 7, 0.5f, 0.7f)
 
         for (tube in tubes) {
-            tube.build(sceneView, nodeMaterial, 12, 20, 0.05f)
+            tube.build(sceneView, tubeMaterial, 12, 20, 0.05f)
         }
         for (node in nodes) {
-            node.build(sceneView, tubeMaterial, 24, 24, 1.25f*0.05f)
+            node.build(sceneView, nodeMaterial, 24, 24, 0.0625f)
         }
     }
 

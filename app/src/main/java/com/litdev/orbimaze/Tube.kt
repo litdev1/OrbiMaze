@@ -26,8 +26,10 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.sign
 
+var nextTubeId: Int = 0
 class Tube(val node1: Node,
            val node2: Node) {
+    var id: Int = 0
     lateinit var startDirection: Vector3
     lateinit var A: Vector3
     lateinit var B: Vector3
@@ -36,8 +38,10 @@ class Tube(val node1: Node,
     lateinit var renderNode: io.github.sceneview.node.RenderableNode
 
     init {
+        id = nextTubeId++
         node1.tubes.add(this)
         node2.tubes.add(this)
+        startDirection = Vector3.zero()
     }
 
     fun build(sceneView: MainSceneView,
@@ -51,17 +55,16 @@ class Tube(val node1: Node,
 
         val pos1 = node1.pos
         val pos2 = node2.pos
-        var dirX = sign(pos2.x - pos1.x)
-        var dirY = 0.0f
-        var dirZ = sign(pos2.z - pos1.z)
-        if (dirX == 0.0f && dirZ == 0.0f) {
-            dirY = 1.0f
-        } else if (abs(pos2.x - pos1.x) >= abs(pos2.z - pos1.z)) {
-            dirZ = 0.0f
-        } else {
-            dirX = 0.0f
+        if (startDirection.length() == 0.0f) {
+            var startDirection = Vector3.subtract(node2.pos, node1.pos)
+            if (abs(startDirection.x) < abs(startDirection.y) ||
+                abs(startDirection.x) < abs(startDirection.z)) startDirection.x = 0.0f
+            if (abs(startDirection.y) < abs(startDirection.x) ||
+                abs(startDirection.y) < abs(startDirection.z)) startDirection.y = 0.0f
+            if (abs(startDirection.z) < abs(startDirection.x) ||
+                abs(startDirection.z) < abs(startDirection.y)) startDirection.z = 0.0f
         }
-        startDirection = Vector3(dirX, dirY, dirZ).normalized()
+        startDirection = startDirection.normalized()
         val dir1 = startDirection
         val dir2 = dir1
         A = pos1
@@ -196,5 +199,11 @@ class Tube(val node1: Node,
             B.y + 2 * C.y * r + 3 * D.y * r * r,
             B.z + 2 * C.z * r + 3 * D.z * r * r
         ).normalized()
+    }
+
+
+    fun initStartDirection(direction: Vector3)
+    {
+        startDirection = direction
     }
 }

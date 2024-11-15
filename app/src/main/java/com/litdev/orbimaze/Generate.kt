@@ -9,9 +9,15 @@ class Generate(val nodes: MutableList<Node>,
 
     val rand: Random = Random(System.currentTimeMillis())
 
-    fun simple() {
+    fun reset() {
+        nextNodeId = 0
+        nextTubeId = 0
         nodes.clear()
         tubes.clear()
+    }
+
+    fun simple() {
+        reset()
 
         nodes.add(Node(Vector3(0.0f, 1.0f, 0.0f)))
         nodes.add(Node(Vector3(1.0f, 2.0f, 1.0f)))
@@ -19,11 +25,12 @@ class Generate(val nodes: MutableList<Node>,
         tubes.add(Tube(nodes[0], nodes[1]))
         tubes.add(Tube(nodes[1], nodes[2]))
         tubes.add(Tube(nodes[2], nodes[0]))
+
+        tidy()
     }
 
     fun random(count: Int) {
-        nodes.clear()
-        tubes.clear()
+        reset()
 
         val length = pow(count.toFloat(), 1 / 3.0f)
 
@@ -55,20 +62,12 @@ class Generate(val nodes: MutableList<Node>,
             }
             if (!duplicate) tubes.add(Tube(node1, node2))
         }
-        val nodesToRemove = mutableListOf<Node>()
-        for (node in nodes) {
-            if (node.tubes.isEmpty()) {
-                nodesToRemove.add(node)
-            }
-        }
-        for (node in nodesToRemove) {
-            nodes.remove(node)
-        }
+
+        tidy()
     }
 
-    fun cube(nx: Int, ny: Int, nz: Int, removeFraction: Float) {
-        nodes.clear()
-        tubes.clear()
+    fun cube(nx: Int, ny: Int, nz: Int, removeFraction: Float, moveDistance: Float) {
+        reset()
 
         for (k in 0 until nz) {
             for (j in 0 until ny) {
@@ -77,6 +76,7 @@ class Generate(val nodes: MutableList<Node>,
                 }
             }
         }
+        moveRandom(moveDistance)
         for (i in 0 until nx) {
             for (j in 0 until ny) {
                 for (k in 0 until nz) {
@@ -85,19 +85,32 @@ class Generate(val nodes: MutableList<Node>,
                     val node = nodes[ijk]
                     if (i < nx - 1) {
                         val nodeX = nodes[ijk + 1]
-                        tubes.add(Tube(node, nodeX))
+                        val tube = Tube(node, nodeX)
+                        tube.initStartDirection(Vector3(1.0f, 0.0f, 0.0f))
+                        tubes.add(tube)
                     }
                     if (j < ny - 1) {
                         val nodeY = nodes[ijk + ny]
-                        tubes.add(Tube(node, nodeY))
+                        val tube = Tube(node, nodeY)
+                        tube.initStartDirection(Vector3(0.0f, 1.0f, 0.0f))
+                        tubes.add(tube)
+
                     }
                     if (k < nz - 1) {
                         val nodeZ = nodes[ijk + ny * nz]
-                        tubes.add(Tube(node, nodeZ))
+                        val tube = Tube(node, nodeZ)
+                        tube.initStartDirection(Vector3(0.0f, 0.0f, 1.0f))
+                        tubes.add(tube)
                     }
                 }
             }
         }
+
+        tidy()
+    }
+
+    fun tidy()
+    {
         val nodesToRemove = mutableListOf<Node>()
         val tubesToRemove = mutableListOf<Tube>()
         var first = true
@@ -124,4 +137,14 @@ class Generate(val nodes: MutableList<Node>,
             }
         }
     }
+
+    fun moveRandom(dist: Float) {
+        for (node in nodes) {
+            node.pos.x += dist * (rand.nextFloat() - 0.5f)
+            node.pos.y += dist * (rand.nextFloat() - 0.5f)
+            node.pos.z += dist * (rand.nextFloat() - 0.5f)
+        }
+    }
 }
+
+private fun Tube.setstartDirection(vector3: Vector3) {}

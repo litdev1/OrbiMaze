@@ -24,7 +24,7 @@
         android:layout_height="wrap_content"
         android:padding="10dp"
         android:text="fps"
-        android:textColor="@color/white"
+        android:textColor="@color/gray"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
