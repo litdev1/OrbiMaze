@@ -158,7 +158,7 @@ class SceneActivity : AppCompatActivity() {
         val materialInstance = material.createInstance()
         player.build(sceneView, materialInstance, Color.RED, 0.1f, 2.0f)
         player.positionSet(Position(x = 3.0f, y = 3.0f, z = 3.0f))
-        player.tubeSet(tubes[0], 1, 0.01f)
+        player.tubeSet(tubes[0], 1, 1.0f)
     }
 
     @SuppressLint("DefaultLocale")
@@ -204,6 +204,10 @@ class SceneActivity : AppCompatActivity() {
     fun update(dt: Float) {
         if (dt > 1.0f) return
         player.r += player.dir * player.speed * dt / player.tube.length
+        if (player.r < 0 || player.r > 1)
+        {
+            player.newTube()
+        }
         player.positionSet(player.tube.pointP(player.r))
     }
 }

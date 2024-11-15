@@ -78,11 +78,9 @@ class Tube(val node1: Node,
             dir1.y + dir2.y - 2 * (pos2.y - pos1.y),
             dir1.z + dir2.z - 2 * (pos2.z - pos1.z)
         )
-        length = Vector3(
-            A.x + B.x/2.0f + C.x/3.0f + D.x/4.0f,
-            A.y + B.y/2.0f + C.y/3.0f + D.y/4.0f,
-            A.z + B.z/2.0f + C.z/3.0f + D.z/4.0f).length()
+        length = Vector3.subtract(pos1, pos2).length() //Approximate length of tube
 
+        //For bounding box
         val min = Vector3(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE)
         val max = Vector3(-Float.MAX_VALUE, -Float.MAX_VALUE, -Float.MAX_VALUE)
 
@@ -90,7 +88,7 @@ class Tube(val node1: Node,
             var r = i.toFloat() / segments //parametric distance along the curve
             val radScale = radius * (0.25f + 0.75f * pow(2 * abs(r - 0.5f), 2.0f))
             val pos = pointV(r) //position vector
-            val dir = directionV(r) //direction vector
+            val dir = direction(r) //direction vector
             var rad = Vector3.cross(dir, Vector3(0.0f, 1.0f, 0.0f)) //vector in radial direction
             if (Vector3.dot(rad, rad) == 0.0f) {
                 rad = Vector3.cross(dir, Vector3(1.0f, 0.0f, 0.0f))
@@ -196,7 +194,7 @@ class Tube(val node1: Node,
         )
     }
 
-    fun directionV(r: Float) : Vector3 {
+    fun direction(r: Float) : Vector3 {
         return Vector3(
             B.x + 2 * C.x * r + 3 * D.x * r * r,
             B.y + 2 * C.y * r + 3 * D.y * r * r,

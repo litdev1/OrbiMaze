@@ -64,4 +64,20 @@ class Orb {
     fun positionGet(): Position {
         return sphere.position
     }
+
+    fun newTube() {
+        val node = if (dir > 0) tube.node2 else tube.node1
+        if (node.tubes.size == 1) {
+            dir = -dir
+        }
+        else {
+            var nextTube = tube
+            while (nextTube == tube) {
+                nextTube = node.tubes.random()
+            }
+            tube = nextTube
+            dir = if (tube.node1 == node) 1 else -1
+        }
+        r = if (dir > 0) 0.0f else 1.0f
+    }
 }
