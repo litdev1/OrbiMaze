@@ -203,14 +203,13 @@ class SceneActivity : AppCompatActivity() {
         )
 
         Generate(nodes, tubes).simple()
-        Generate(nodes, tubes).random(1000)
+        Generate(nodes, tubes).random(100)
 
-        val cubicTube: CubicTube = CubicTube(sceneView, tubeMaterial, nodeMaterial, 0.05f, 12, 20)
         for (tube in tubes) {
-            cubicTube.buildTube(tube)
+            tube.build(sceneView, nodeMaterial, 12, 20, 0.05f)
         }
         for (node in nodes) {
-            cubicTube.buildNode(node)
+            node.build(sceneView, tubeMaterial, 24, 24, 1.25f*0.05f)
         }
     }
 
@@ -232,13 +231,11 @@ class SceneActivity : AppCompatActivity() {
                     if (hideSystemBars) {
                         if (fullScreen) {
                             hide(
-                                WindowInsetsCompat.Type.statusBars() or
-                                        WindowInsetsCompat.Type.navigationBars()
+                                WindowInsetsCompat.Type.systemBars()
                             )
                         } else {
                             show(
-                                WindowInsetsCompat.Type.statusBars() or
-                                        WindowInsetsCompat.Type.navigationBars()
+                                WindowInsetsCompat.Type.systemBars()
                             )
                         }
                         systemBarsBehavior =
