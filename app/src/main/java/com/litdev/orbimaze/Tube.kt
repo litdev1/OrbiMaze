@@ -54,7 +54,9 @@ class Tube(val node1: Node,
         var dirX = sign(pos2.x - pos1.x)
         var dirY = 0.0f
         var dirZ = sign(pos2.z - pos1.z)
-        if (abs(pos2.x - pos1.x) >= abs(pos2.z - pos1.z)) {
+        if (dirX == 0.0f && dirZ == 0.0f) {
+            dirY = 1.0f
+        } else if (abs(pos2.x - pos1.x) >= abs(pos2.z - pos1.z)) {
             dirZ = 0.0f
         } else {
             dirX = 0.0f
@@ -75,7 +77,6 @@ class Tube(val node1: Node,
             dir1.z + dir2.z - 2 * (pos2.z - pos1.z)
         )
 
-        val up = Vector3(0.0f, 1.0f, 0.0f)
         val min = Vector3(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE)
         val max = Vector3(-Float.MAX_VALUE, -Float.MAX_VALUE, -Float.MAX_VALUE)
 
@@ -84,7 +85,10 @@ class Tube(val node1: Node,
             val radScale = radius * (0.25f + 0.75f * pow(2 * abs(r - 0.5f), 2.0f))
             val pos = point(r) //position vector
             val dir = direction(r) //direction vector
-            val rad = Vector3.cross(dir, up) //vector in radial direction
+            var rad = Vector3.cross(dir, Vector3(0.0f, 1.0f, 0.0f)) //vector in radial direction
+            if (Vector3.dot(rad, rad) == 0.0f) {
+                rad = Vector3.cross(dir, Vector3(1.0f, 0.0f, 0.0f))
+            }
             for (j in 0..sides - 1) {
                 val angle = j.toFloat() / sides * 360
                 val rot = Quaternion.axisAngle(dir, angle) //rotation about direction

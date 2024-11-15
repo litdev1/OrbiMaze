@@ -28,6 +28,7 @@ import io.github.sceneview.node.CylinderNode
 import io.github.sceneview.node.LightNode
 import io.github.sceneview.node.SphereNode
 import java.nio.ByteBuffer
+import java.nio.channels.NotYetConnectedException
 
 class SceneActivity : AppCompatActivity() {
     lateinit var sceneView: MainSceneView
@@ -68,9 +69,9 @@ class SceneActivity : AppCompatActivity() {
 //        val bloomOptions = com.google.android.filament.View.BloomOptions()
 //        bloomOptions.enabled = true
 //        sceneView.view.bloomOptions = bloomOptions
-        val fogOptions = com.google.android.filament.View.FogOptions()
-        fogOptions.enabled = true
-        sceneView.view.fogOptions = fogOptions
+//        val fogOptions = com.google.android.filament.View.FogOptions()
+//        fogOptions.enabled = true
+//        sceneView.view.fogOptions = fogOptions
 
         sceneView.mainLightNode.apply {
             this?.intensity = 10000.0f
@@ -202,8 +203,9 @@ class SceneActivity : AppCompatActivity() {
             reflectance = 0.8f
         )
 
-        Generate(nodes, tubes).simple()
-        Generate(nodes, tubes).random(100)
+//        Generate(nodes, tubes).simple()
+//        Generate(nodes, tubes).random(100)
+        Generate(nodes, tubes).cube(7, 7, 7, 0.3f)
 
         for (tube in tubes) {
             tube.build(sceneView, nodeMaterial, 12, 20, 0.05f)
@@ -253,3 +255,4 @@ class SceneActivity : AppCompatActivity() {
         return ByteBuffer.wrap(bytes)
     }
 }
+
