@@ -2,24 +2,16 @@ package com.litdev.orbimaze
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
-import com.google.android.filament.Material
-import com.google.android.filament.utils.Manipulator
-import io.github.sceneview.math.Position
-import io.github.sceneview.math.Size
-import io.github.sceneview.node.LightNode
-import java.nio.ByteBuffer
 
 class SceneActivity : AppCompatActivity() {
     lateinit var sceneView: MainSceneView

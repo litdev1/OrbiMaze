@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.Color
 import android.util.AttributeSet
 import android.view.MotionEvent
-import android.widget.TextView
 import androidx.core.content.ContextCompat
 import com.google.android.filament.Material
 import com.google.android.filament.utils.Manipulator
@@ -17,11 +16,6 @@ import io.github.sceneview.gesture.ScaleGestureDetector
 import io.github.sceneview.math.Position
 import io.github.sceneview.node.Node
 import java.nio.ByteBuffer
-import kotlin.collections.get
-import kotlin.collections.plusAssign
-import kotlin.compareTo
-import kotlin.div
-import kotlin.times
 
 class MainSceneView @JvmOverloads constructor(
     context: Context,
