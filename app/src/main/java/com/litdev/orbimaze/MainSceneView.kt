@@ -1,6 +1,5 @@
 package com.litdev.orbimaze
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.util.AttributeSet
 import android.view.MotionEvent
@@ -193,7 +192,7 @@ class MainSceneView @JvmOverloads constructor(
                 node: Node?
             ) {
                 if (node != null) {
-                    val a = 1
+
                 }
             }
         }

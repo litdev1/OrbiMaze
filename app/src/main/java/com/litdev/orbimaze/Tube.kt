@@ -19,13 +19,11 @@ import io.github.sceneview.math.Transform
 import io.github.sceneview.math.centerPosition
 import io.github.sceneview.math.halfExtentSize
 import io.github.sceneview.math.toFloat3
-import io.github.sceneview.math.toVector3Box
 import java.nio.FloatBuffer
 import java.nio.IntBuffer
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
-import kotlin.math.sign
 
 var nextTubeId: Int = 0
 class Tube(val node1: Node,

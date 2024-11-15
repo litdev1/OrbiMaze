@@ -10,25 +10,15 @@ import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.blue
-import androidx.core.graphics.green
-import androidx.core.graphics.red
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
-import com.google.android.filament.Colors
-import com.google.android.filament.EntityManager
-import com.google.android.filament.LightManager
 import com.google.android.filament.Material
 import com.google.android.filament.utils.Manipulator
-import dev.romainguy.kotlin.math.Float3
 import io.github.sceneview.math.Position
 import io.github.sceneview.math.Size
-import io.github.sceneview.node.CubeNode
-import io.github.sceneview.node.CylinderNode
 import io.github.sceneview.node.LightNode
-import io.github.sceneview.node.SphereNode
 import java.nio.ByteBuffer
 
 lateinit var sceneActivity: SceneActivity

@@ -7,11 +7,9 @@ import com.google.android.filament.MaterialInstance
 import io.github.sceneview.math.Position
 import io.github.sceneview.node.LightNode
 import io.github.sceneview.node.SphereNode
-import android.graphics.Color
 import androidx.core.graphics.blue
 import androidx.core.graphics.green
 import androidx.core.graphics.red
-import io.github.sceneview.collision.Vector3
 
 class Orb {
     lateinit var sphere: SphereNode
@@ -47,7 +45,7 @@ class Orb {
             build(sceneView.engine, lightEntity)
         }
         lightNode = LightNode(sceneView.engine, lightEntity)
-        sceneView.addChildNode(lightNode!!)
+        sceneView.addChildNode(lightNode)
     }
 
     fun tubeSet(tube: Tube, dir: Int, speed: Float) {
