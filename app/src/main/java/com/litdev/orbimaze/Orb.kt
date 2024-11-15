@@ -23,11 +23,12 @@ class Orb {
         val R = color.red / 255.0f
         val G = color.green / 255.0f
         val B = color.blue / 255.0f
+
         material.setParameter("color", Colors.RgbType.SRGB, R, G, B)
         material.setParameter("metallic", 1.0f)
         material.setParameter("roughness", 0.0f)
         material.setParameter("reflectance", 1.0f)
-        material.setParameter("emissive", Colors.RgbType.SRGB, 1.0f, 0.0f, 0.0f)
+        material.setParameter("emissive", Colors.RgbType.SRGB, R, G, B)
 
         sphere = SphereNode(
             engine = sceneView.engine,

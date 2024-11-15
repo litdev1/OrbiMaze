@@ -25,7 +25,8 @@ class MainSceneView @JvmOverloads constructor(
     val nodes = mutableListOf<com.litdev.orbimaze.Node>()
     val tubes = mutableListOf<Tube>()
     val player: Orb = Orb()
-    var lastTimeNanos: Long = 0
+    val enemies = mutableListOf<Orb>()
+    var lastTimeNanos: Long = Long.MAX_VALUE
     var fps: Int = 0
 
     init {
@@ -103,8 +104,8 @@ class MainSceneView @JvmOverloads constructor(
         )
 
 //        Generate(nodes, tubes).simple()
-//        Generate(nodes, tubes).random(100)
-        Generate(nodes, tubes).cube(7, 7, 7, 0.5f, 0.7f)
+//          Generate(nodes, tubes).random(1000)
+        Generate(nodes, tubes).cube(7, 7, 7, 0.6f, 0.7f)
 
         for (tube in tubes) {
             tube.build(this, tubeMaterial, 12, 20, 0.05f)
@@ -115,10 +116,24 @@ class MainSceneView @JvmOverloads constructor(
 
         val buffer = readAsset("materials/emissive_colored.filamat")
         val material = Material.Builder().payload(buffer, buffer.remaining()).build(engine)
-        val materialInstance = material.createInstance()
-        player.build(this, materialInstance, Color.RED, 0.1f, 2.0f)
-        player.positionSet(Position(x = 3.0f, y = 3.0f, z = 3.0f))
-        player.tubeSet(tubes[0], 1, 1.0f)
+
+//        player.build(this, material.createInstance(), Color.RED, 0.1f, 2.0f)
+//        player.tubeSet(tubes.random(), 1, 3.0f)
+
+        val enemy1 = Orb()
+        enemy1.build(this, material.createInstance(), Color.RED, 0.1f, 2.0f)
+        enemy1.tubeSet(tubes.random(), 1, 1.0f)
+        enemies.add(enemy1)
+
+        val enemy2 = Orb()
+        enemy2.build(this, material.createInstance(), Color.GREEN, 0.1f, 2.0f)
+        enemy2.tubeSet(tubes.random(), 1, 1.0f)
+        enemies.add(enemy2)
+
+        val enemy3 = Orb()
+        enemy3.build(this, material.createInstance(), Color.BLUE, 0.1f, 2.0f)
+        enemy3.tubeSet(tubes.random(), 1, 1.0f)
+        enemies.add(enemy3)
     }
 
     override fun onFrame(frameTimeNanos: Long) {
@@ -139,7 +154,16 @@ class MainSceneView @JvmOverloads constructor(
     }
 
     fun update(dt: Float) {
-        if (dt > 1.0f) return
+        if (dt < 0.0f) return
+        for (enemy in enemies) {
+            enemy.r += enemy.dir * enemy.speed * dt / enemy.tube.length
+            if (enemy.r < 0 || enemy.r > 1)
+            {
+                enemy.newTube()
+            }
+            enemy.positionSet(enemy.tube.pointP(enemy.r))
+        }
+        return
         player.r += player.dir * player.speed * dt / player.tube.length
         if (player.r < 0 || player.r > 1)
         {

@@ -52,7 +52,7 @@ class Generate(val nodes: MutableList<Node>,
             val node2 = nodes[rand.nextInt(count)]
             if (node1 == node2) continue
             val dist = Vector3.subtract(node1.pos, node2.pos).length()
-            if (dist < 0.5 || dist > length/3.0f) continue
+            if (dist < 0.5f || dist > length/2.5f) continue
             var duplicate = false
             for (tube in node1.tubes) {
                 if (tube.node1 == node2 || tube.node2 == node2) {
