@@ -17,7 +17,6 @@ import io.github.sceneview.gesture.RotateGestureDetector
 import io.github.sceneview.gesture.ScaleGestureDetector
 import io.github.sceneview.math.Position
 import io.github.sceneview.math.toFloat3
-import io.github.sceneview.math.toVector3
 import io.github.sceneview.node.Node
 import java.nio.ByteBuffer
 

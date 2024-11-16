@@ -83,7 +83,7 @@ class Orb {
                     if (tryTube == tube) continue
                     if (tryTube.joint1 == nextJoint || tryTube.joint2 == nextJoint) {
                         nextTube = tryTube
-                        break;
+                        break
                     }
                 }
                 tube = nextTube
