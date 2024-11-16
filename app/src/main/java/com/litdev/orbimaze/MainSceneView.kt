@@ -9,6 +9,7 @@ import com.google.android.filament.Material
 import com.google.android.filament.utils.Manipulator
 import dev.romainguy.kotlin.math.Float2
 import io.github.sceneview.SceneView
+import io.github.sceneview.collision.Quaternion
 import io.github.sceneview.collision.Vector3
 import io.github.sceneview.gesture.GestureDetector.OnGestureListener
 import io.github.sceneview.gesture.MoveGestureDetector
@@ -16,6 +17,7 @@ import io.github.sceneview.gesture.RotateGestureDetector
 import io.github.sceneview.gesture.ScaleGestureDetector
 import io.github.sceneview.math.Position
 import io.github.sceneview.math.toFloat3
+import io.github.sceneview.math.toVector3
 import io.github.sceneview.node.Node
 import java.nio.ByteBuffer
 
@@ -28,6 +30,14 @@ class MainSceneView @JvmOverloads constructor(
     val tubes = mutableListOf<Tube>()
     val nextJoints = mutableListOf<Joint>()
     var nextJoint = 0
+    var wait = false
+    var cameraDist = 10.0f
+    var scaleFactor = 0.02f
+    val cameraMinDist = 0.01f
+    val cameraMaxDist = 20.0f
+    var cameraRot = 0.0f
+    var rotationFactor = 1.0f
+    var cameraDir = Vector3(0.0f, 0.0f, -1.0f)
     val player: Orb = Orb()
     val highlight: Orb = Orb()
     val enemies = mutableListOf<Orb>()
@@ -174,18 +184,24 @@ class MainSceneView @JvmOverloads constructor(
             enemy.positionSet(enemy.tube.pointP(enemy.r))
         }
 
-        player.r += player.dir * player.speed * dt / player.tube.length
-        if (player.r < 0 || player.r > 1)
-        {
-            player.newTube(nextJoints[nextJoint])
-            updateNextJoints()
+        if (!wait) {
+            player.r += player.dir * player.speed * dt / player.tube.length
+            if (player.r < 0 || player.r > 1) {
+                player.newTube(nextJoints[nextJoint])
+                updateNextJoints()
+            }
+            player.positionSet(player.tube.pointP(player.r))
         }
-        player.positionSet(player.tube.pointP(player.r))
 
         val playerPos = player.tube.pointV(player.r)
         val playerDir = player.tube.direction(player.r).normalized()
-        val cameraPos = Vector3.add(playerPos, Vector3(0.0f, 0.0f, 8.0f))
-        val cameraDir = playerDir
+
+        val rot = Quaternion.axisAngle(upDir, -cameraRot) //rotation about vertical direction
+        cameraDir = Quaternion.rotateVector(rot, cameraDir)
+        val cameraPos = Vector3(
+            playerPos.x - cameraDist * cameraDir.x,
+            playerPos.y - cameraDist * cameraDir.y,
+            playerPos.z - cameraDist * cameraDir.z)
         val cameraLookAt = playerPos //Vector3.add(playerPos, cameraDir)
         cameraNode.position = cameraPos.toFloat3()
         cameraNode.lookAt(cameraLookAt.toFloat3(), upDir.toFloat3())
@@ -211,6 +227,8 @@ class MainSceneView @JvmOverloads constructor(
         highlight.positionSet(nextJoints[nextJoint].pos.toFloat3())
     }
 
+    var lastDistanceX = 0.0f
+    var lastDistanceY = 0.0f
     fun setGestureListener() {
         onGestureListener = object : OnGestureListener {
             override fun onContextClick(
@@ -247,14 +265,14 @@ class MainSceneView @JvmOverloads constructor(
                 node: Node?,
                 velocity: Float2
             ) {
-
+                wait = false
             }
 
             override fun onLongPress(
                 e: MotionEvent,
                 node: Node?
             ) {
-
+                wait = true
             }
 
             override fun onMove(
@@ -262,7 +280,9 @@ class MainSceneView @JvmOverloads constructor(
                 e: MotionEvent,
                 node: Node?
             ) {
-
+                cameraRot = (detector.lastDistanceX!!-lastDistanceX)*rotationFactor
+                lastDistanceX = detector.lastDistanceX!!
+                lastDistanceY = detector.lastDistanceY!!
             }
 
             override fun onMoveBegin(
@@ -270,7 +290,9 @@ class MainSceneView @JvmOverloads constructor(
                 e: MotionEvent,
                 node: Node?
             ) {
-
+                cameraRot = detector.lastDistanceX!!*rotationFactor
+                lastDistanceX = detector.lastDistanceX!!
+                lastDistanceY = detector.lastDistanceY!!
             }
 
             override fun onMoveEnd(
@@ -278,7 +300,7 @@ class MainSceneView @JvmOverloads constructor(
                 e: MotionEvent,
                 node: Node?
             ) {
-
+                cameraRot = 0.0f
             }
 
             override fun onRotate(
@@ -310,7 +332,9 @@ class MainSceneView @JvmOverloads constructor(
                 e: MotionEvent,
                 node: Node?
             ) {
-
+                cameraDist *= 1.0f - (detector.scaleFactor-1.0f)*scaleFactor
+                if (cameraDist < cameraMinDist) cameraDist = cameraMinDist
+                if (cameraDist > cameraMaxDist) cameraDist = cameraMaxDist
             }
 
             override fun onScaleBegin(
@@ -349,14 +373,14 @@ class MainSceneView @JvmOverloads constructor(
                 e: MotionEvent,
                 node: Node?
             ) {
-
+                nextJoint = (nextJoint + 1) % nextJoints.size
             }
 
             override fun onSingleTapUp(
                 e: MotionEvent,
                 node: Node?
             ) {
-                nextJoint = (nextJoint + 1) % nextJoints.size
+
             }
         }
     }
