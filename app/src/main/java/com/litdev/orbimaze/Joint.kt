@@ -5,14 +5,14 @@ import io.github.sceneview.collision.Vector3
 import io.github.sceneview.math.Position
 import io.github.sceneview.node.SphereNode
 
-var nextNodeId: Int = 0
-class Node(val pos: Vector3) {
+var nextJointId: Int = 0
+class Joint(val pos: Vector3) {
     var id: Int = 0
     val tubes = mutableListOf<Tube>()
     lateinit var renderNode: SphereNode
 
     init {
-        id = nextNodeId++
+        id = nextJointId++
         tubes.clear()
     }
 

@@ -26,8 +26,8 @@ import kotlin.math.max
 import kotlin.math.min
 
 var nextTubeId: Int = 0
-class Tube(val node1: Node,
-           val node2: Node) {
+class Tube(val joint1: Joint,
+           val joint2: Joint) {
     var id: Int = 0
     var length: Float = 0.0f
     var startDirection: Vector3 = Vector3.zero()
@@ -39,8 +39,8 @@ class Tube(val node1: Node,
 
     init {
         id = nextTubeId++
-        node1.tubes.add(this)
-        node2.tubes.add(this)
+        joint1.tubes.add(this)
+        joint2.tubes.add(this)
     }
 
     fun build(sceneView: MainSceneView,
@@ -52,10 +52,10 @@ class Tube(val node1: Node,
         val indices: IntArray = IntArray(segments * sides * 2 * 3)
         val boundingBox = Box()
 
-        val pos1 = node1.pos
-        val pos2 = node2.pos
+        val pos1 = joint1.pos
+        val pos2 = joint2.pos
         if (startDirection.length() == 0.0f) {
-            var startDirection = Vector3.subtract(node2.pos, node1.pos)
+            var startDirection = Vector3.subtract(joint2.pos, joint1.pos)
             if (abs(startDirection.x) < abs(startDirection.y) ||
                 abs(startDirection.x) < abs(startDirection.z)) startDirection.x = 0.0f
             if (abs(startDirection.y) < abs(startDirection.x) ||

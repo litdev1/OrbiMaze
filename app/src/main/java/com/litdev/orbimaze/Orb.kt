@@ -10,7 +10,6 @@ import io.github.sceneview.node.SphereNode
 import androidx.core.graphics.blue
 import androidx.core.graphics.green
 import androidx.core.graphics.red
-import io.github.sceneview.collision.Vector3
 
 class Orb {
     lateinit var sphere: SphereNode
@@ -67,32 +66,29 @@ class Orb {
         return sphere.position
     }
 
-    fun newTube(tubeDir: Vector3 = Vector3.zero()) {
-        val node = if (dir > 0) tube.node2 else tube.node1
-        if (node.tubes.size == 1) {
+    fun newTube(nextJoint: Joint? = null) {
+        val endJoint = if (dir > 0) tube.joint2 else tube.joint1
+        if (endJoint.tubes.size == 1) {
             dir = -dir
         }
         else {
             var nextTube = tube
-            if (tubeDir.length() == 0.0f) {
+            if (nextJoint == null) {
                 while (nextTube == tube) {
-                    nextTube = node.tubes.random()
+                    nextTube = endJoint.tubes.random()
                 }
                 tube = nextTube
             } else {
-                var maxDot = 0.0f
-                for (tube1 in node.tubes) {
-                    if (tube1 == tube) continue
-                    //TODO: Fix this
-                    val dot = Vector3.dot(tubeDir, tube1.startDirection)
-                    if (dot > maxDot) {
-                        maxDot = dot
-                        nextTube = tube1
+                for (tryTube in endJoint.tubes) {
+                    if (tryTube == tube) continue
+                    if (tryTube.joint1 == nextJoint || tryTube.joint2 == nextJoint) {
+                        nextTube = tryTube
+                        break;
                     }
                 }
                 tube = nextTube
             }
-            dir = if (tube.node1 == node) 1 else -1
+            dir = if (tube.joint1 == endJoint) 1 else -1
         }
         r = if (dir > 0) 0.0f else 1.0f
     }

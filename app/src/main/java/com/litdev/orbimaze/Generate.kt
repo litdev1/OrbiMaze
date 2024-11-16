@@ -4,27 +4,27 @@ import io.github.sceneview.collision.Vector3
 import dev.romainguy.kotlin.math.pow
 import kotlin.random.Random
 
-class Generate(val nodes: MutableList<Node>,
+class Generate(val joints: MutableList<Joint>,
                val tubes: MutableList<Tube>) {
 
     val rand: Random = Random(System.currentTimeMillis())
 
     fun reset() {
-        nextNodeId = 0
+        nextJointId = 0
         nextTubeId = 0
-        nodes.clear()
+        joints.clear()
         tubes.clear()
     }
 
     fun simple() {
         reset()
 
-        nodes.add(Node(Vector3(0.0f, 1.0f, 0.0f)))
-        nodes.add(Node(Vector3(1.0f, 2.0f, 1.0f)))
-        nodes.add(Node(Vector3(2.0f, 1.0f, 1.0f)))
-        tubes.add(Tube(nodes[0], nodes[1]))
-        tubes.add(Tube(nodes[1], nodes[2]))
-        tubes.add(Tube(nodes[2], nodes[0]))
+        joints.add(Joint(Vector3(0.0f, 1.0f, 0.0f)))
+        joints.add(Joint(Vector3(1.0f, 2.0f, 1.0f)))
+        joints.add(Joint(Vector3(2.0f, 1.0f, 1.0f)))
+        tubes.add(Tube(joints[0], joints[1]))
+        tubes.add(Tube(joints[1], joints[2]))
+        tubes.add(Tube(joints[2], joints[0]))
 
         tidy()
     }
@@ -35,8 +35,8 @@ class Generate(val nodes: MutableList<Node>,
         val length = pow(count.toFloat(), 1 / 3.0f)
 
         for (i in 0 until count) {
-            nodes.add(
-                Node(
+            joints.add(
+                Joint(
                     Vector3(
                         length * rand.nextFloat(),
                         length * rand.nextFloat(),
@@ -48,19 +48,19 @@ class Generate(val nodes: MutableList<Node>,
         var i = 0
         while (tubes.size < count && i < 5*count) {
             i++
-            val node1 = nodes[rand.nextInt(count)]
-            val node2 = nodes[rand.nextInt(count)]
-            if (node1 == node2) continue
-            val dist = Vector3.subtract(node1.pos, node2.pos).length()
+            val joint1 = joints[rand.nextInt(count)]
+            val joint2 = joints[rand.nextInt(count)]
+            if (joint1 == joint2) continue
+            val dist = Vector3.subtract(joint1.pos, joint2.pos).length()
             if (dist < 0.5f || dist > length/2.5f) continue
             var duplicate = false
-            for (tube in node1.tubes) {
-                if (tube.node1 == node2 || tube.node2 == node2) {
+            for (tube in joint1.tubes) {
+                if (tube.joint1 == joint2 || tube.joint2 == joint2) {
                     duplicate = true
                     continue
                 }
             }
-            if (!duplicate) tubes.add(Tube(node1, node2))
+            if (!duplicate) tubes.add(Tube(joint1, joint2))
         }
 
         tidy()
@@ -72,7 +72,7 @@ class Generate(val nodes: MutableList<Node>,
         for (k in 0 until nz) {
             for (j in 0 until ny) {
                 for (i in 0 until nx) {
-                    nodes.add(Node(Vector3(i.toFloat(), j.toFloat(), k.toFloat())))
+                    joints.add(Joint(Vector3(i.toFloat(), j.toFloat(), k.toFloat())))
                 }
             }
         }
@@ -82,23 +82,23 @@ class Generate(val nodes: MutableList<Node>,
                 for (k in 0 until nz) {
                     val ijk = k * ny * nz + j * nz + i
                     if (rand.nextFloat() < removeFraction) continue
-                    val node = nodes[ijk]
+                    val joint = joints[ijk]
                     if (i < nx - 1) {
-                        val nodeX = nodes[ijk + 1]
-                        val tube = Tube(node, nodeX)
+                        val jointX = joints[ijk + 1]
+                        val tube = Tube(joint, jointX)
                         tube.startDirectionSet(Vector3(1.0f, 0.0f, 0.0f))
                         tubes.add(tube)
                     }
                     if (j < ny - 1) {
-                        val nodeY = nodes[ijk + ny]
-                        val tube = Tube(node, nodeY)
+                        val jointY = joints[ijk + ny]
+                        val tube = Tube(joint, jointY)
                         tube.startDirectionSet(Vector3(0.0f, 1.0f, 0.0f))
                         tubes.add(tube)
 
                     }
                     if (k < nz - 1) {
-                        val nodeZ = nodes[ijk + ny * nz]
-                        val tube = Tube(node, nodeZ)
+                        val jointZ = joints[ijk + ny * nz]
+                        val tube = Tube(joint, jointZ)
                         tube.startDirectionSet(Vector3(0.0f, 0.0f, 1.0f))
                         tubes.add(tube)
                     }
@@ -111,26 +111,26 @@ class Generate(val nodes: MutableList<Node>,
 
     fun tidy()
     {
-        val nodesToRemove = mutableListOf<Node>()
+        val jointsToRemove = mutableListOf<Joint>()
         val tubesToRemove = mutableListOf<Tube>()
         var first = true
-        while (first || nodesToRemove.size > 0 || tubesToRemove.size > 0) {
+        while (first || jointsToRemove.size > 0 || tubesToRemove.size > 0) {
             first = false
-            nodesToRemove.clear()
+            jointsToRemove.clear()
             tubesToRemove.clear()
-            for (node in nodes) {
-                if (node.tubes.isEmpty()) {
-                    nodesToRemove.add(node)
-                } else if (node.tubes.size == 1) {
-                    nodesToRemove.add(node)
-                    val tube = node.tubes[0]
+            for (joint in joints) {
+                if (joint.tubes.isEmpty()) {
+                    jointsToRemove.add(joint)
+                } else if (joint.tubes.size == 1) {
+                    jointsToRemove.add(joint)
+                    val tube = joint.tubes[0]
                     tubesToRemove.add(tube)
-                    tube.node1.tubes.remove(tube)
-                    tube.node2.tubes.remove(tube)
+                    tube.joint1.tubes.remove(tube)
+                    tube.joint2.tubes.remove(tube)
                 }
             }
-            for (node in nodesToRemove) {
-                nodes.remove(node)
+            for (joint in jointsToRemove) {
+                joints.remove(joint)
             }
             for (tube in tubesToRemove) {
                 tubes.remove(tube)
@@ -139,10 +139,10 @@ class Generate(val nodes: MutableList<Node>,
     }
 
     fun moveRandom(dist: Float) {
-        for (node in nodes) {
-            node.pos.x += dist * (rand.nextFloat() - 0.5f)
-            node.pos.y += dist * (rand.nextFloat() - 0.5f)
-            node.pos.z += dist * (rand.nextFloat() - 0.5f)
+        for (joint in joints) {
+            joint.pos.x += dist * (rand.nextFloat() - 0.5f)
+            joint.pos.y += dist * (rand.nextFloat() - 0.5f)
+            joint.pos.z += dist * (rand.nextFloat() - 0.5f)
         }
     }
 }
