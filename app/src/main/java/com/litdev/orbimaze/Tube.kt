@@ -64,6 +64,10 @@ class Tube(val node1: Node,
                 abs(startDirection.z) < abs(startDirection.y)) startDirection.z = 0.0f
         }
         startDirection = startDirection.normalized()
+        var tangent = Vector3.cross(startDirection, Vector3(0.0f, 1.0f, 0.0f))
+        if (Vector3.dot(tangent, tangent) == 0.0f) {
+            tangent = Vector3.cross(startDirection, Vector3(1.0f, 0.0f, 0.0f))
+        }
         val dir1 = startDirection
         val dir2 = dir1
         A = pos1
@@ -78,7 +82,7 @@ class Tube(val node1: Node,
             dir1.y + dir2.y - 2 * (pos2.y - pos1.y),
             dir1.z + dir2.z - 2 * (pos2.z - pos1.z)
         )
-        length = Vector3.subtract(pos1, pos2).length() //Approximate length of tube
+        length = Vector3.subtract(pos1, pos2).length() //Approximate length of tube, can't be bothered with integral
 
         //For bounding box
         val min = Vector3(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE)
@@ -89,9 +93,9 @@ class Tube(val node1: Node,
             val radScale = radius * (0.25f + 0.75f * pow(2 * abs(r - 0.5f), 2.0f))
             val pos = pointV(r) //position vector
             val dir = direction(r) //direction vector
-            var rad = Vector3.cross(dir, Vector3(0.0f, 1.0f, 0.0f)) //vector in radial direction
+            var rad = Vector3.cross(dir, tangent).normalized() //vector in radial direction
             if (Vector3.dot(rad, rad) == 0.0f) {
-                rad = Vector3.cross(dir, Vector3(1.0f, 0.0f, 0.0f))
+                TODO("Should never happen")
             }
             for (j in 0..sides - 1) {
                 val angle = j.toFloat() / sides * 360

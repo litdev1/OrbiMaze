@@ -49,6 +49,7 @@ dependencies {
     // SceneView
     implementation("io.github.sceneview:sceneview:2.2.1")
 
+
     // Filament
     implementation("com.google.android.filament:filament-android:1.52.0")
     implementation("com.google.android.filament:filament-utils-android:1.52.0")

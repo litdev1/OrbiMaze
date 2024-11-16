@@ -8,12 +8,16 @@ import androidx.core.content.ContextCompat
 import com.google.android.filament.Material
 import com.google.android.filament.utils.Manipulator
 import dev.romainguy.kotlin.math.Float2
+import dev.romainguy.kotlin.math.Float3
 import io.github.sceneview.SceneView
+import io.github.sceneview.collision.Vector3
 import io.github.sceneview.gesture.GestureDetector.OnGestureListener
 import io.github.sceneview.gesture.MoveGestureDetector
 import io.github.sceneview.gesture.RotateGestureDetector
 import io.github.sceneview.gesture.ScaleGestureDetector
+import io.github.sceneview.math.Direction
 import io.github.sceneview.math.Position
+import io.github.sceneview.math.toFloat3
 import io.github.sceneview.node.Node
 import java.nio.ByteBuffer
 
@@ -28,6 +32,7 @@ class MainSceneView @JvmOverloads constructor(
     val enemies = mutableListOf<Orb>()
     var lastTimeNanos: Long = Long.MAX_VALUE
     var fps: Int = 0
+    val upDir = Vector3(0.0f, 1.0f, 0.0f)
 
     init {
         setGestureListener()
@@ -49,10 +54,10 @@ class MainSceneView @JvmOverloads constructor(
     private fun initialiseScene() {
 //        val bloomOptions = com.google.android.filament.View.BloomOptions()
 //        bloomOptions.enabled = true
-//        sceneView.view.bloomOptions = bloomOptions
+//        view.bloomOptions = bloomOptions
 //        val fogOptions = com.google.android.filament.View.FogOptions()
 //        fogOptions.enabled = true
-//        sceneView.view.fogOptions = fogOptions
+//        view.fogOptions = fogOptions
 
         mainLightNode.apply {
             this?.intensity = 10000.0f
@@ -86,18 +91,18 @@ class MainSceneView @JvmOverloads constructor(
             .mapMinDistance(0.0f)
             .mapExtent(10.0f, 10.0f)
             .build(Manipulator.Mode.ORBIT)
-        cameraManipulator = manipulator
+        cameraManipulator = null
 
         val gold = ContextCompat.getColor(context, R.color.gold)
         val silver = ContextCompat.getColor(context, R.color.silver)
 
         val materialLoader = materialLoader
-        val nodeMaterial = materialLoader.createColorInstance(color = silver,
+        val nodeMaterial = materialLoader.createColorInstance(color = gold,
             metallic = 1.0f,
             roughness = 0.1f,
             reflectance = 0.8f
         )
-        val tubeMaterial = materialLoader.createColorInstance(color = gold,
+        val tubeMaterial = materialLoader.createColorInstance(color = silver,
             metallic = 1.0f,
             roughness = 0.1f,
             reflectance = 0.8f
@@ -111,29 +116,21 @@ class MainSceneView @JvmOverloads constructor(
             tube.build(this, tubeMaterial, 12, 20, 0.05f)
         }
         for (node in nodes) {
-            node.build(this, nodeMaterial, 24, 24, 0.0625f)
+            node.build(this, nodeMaterial, 24, 24, 0.07f)
         }
 
         val buffer = readAsset("materials/emissive_colored.filamat")
         val material = Material.Builder().payload(buffer, buffer.remaining()).build(engine)
 
-//        player.build(this, material.createInstance(), Color.RED, 0.1f, 2.0f)
-//        player.tubeSet(tubes.random(), 1, 3.0f)
+        player.build(this, material.createInstance(), Color.GREEN, 0.1f, 2.0f)
+        player.tubeSet(tubes.random(), 1, 1.0f)
 
-        val enemy1 = Orb()
-        enemy1.build(this, material.createInstance(), Color.RED, 0.1f, 2.0f)
-        enemy1.tubeSet(tubes.random(), 1, 1.0f)
-        enemies.add(enemy1)
-
-        val enemy2 = Orb()
-        enemy2.build(this, material.createInstance(), Color.GREEN, 0.1f, 2.0f)
-        enemy2.tubeSet(tubes.random(), 1, 1.0f)
-        enemies.add(enemy2)
-
-        val enemy3 = Orb()
-        enemy3.build(this, material.createInstance(), Color.BLUE, 0.1f, 2.0f)
-        enemy3.tubeSet(tubes.random(), 1, 1.0f)
-        enemies.add(enemy3)
+        for (i in 0..5) {
+            val enemy = Orb()
+            enemy.build(this, material.createInstance(), Color.RED, 0.1f, 2.0f)
+            enemy.tubeSet(tubes.random(), 1, 0.5f)
+            enemies.add(enemy)
+        }
     }
 
     override fun onFrame(frameTimeNanos: Long) {
@@ -154,7 +151,7 @@ class MainSceneView @JvmOverloads constructor(
     }
 
     fun update(dt: Float) {
-        if (dt < 0.0f) return
+        if (dt < 0.0f || dt > 1.0f) return
         for (enemy in enemies) {
             enemy.r += enemy.dir * enemy.speed * dt / enemy.tube.length
             if (enemy.r < 0 || enemy.r > 1)
@@ -163,13 +160,21 @@ class MainSceneView @JvmOverloads constructor(
             }
             enemy.positionSet(enemy.tube.pointP(enemy.r))
         }
-        return
+
         player.r += player.dir * player.speed * dt / player.tube.length
         if (player.r < 0 || player.r > 1)
         {
             player.newTube()
         }
         player.positionSet(player.tube.pointP(player.r))
+
+        val playerPos = player.tube.pointV(player.r)
+        val playerDir = player.tube.direction(player.r).normalized()
+        val cameraPos = Vector3.add(playerPos, Vector3(0.0f, 0.0f, 5.0f))
+        val cameraDir = playerDir
+        val cameraLookAt = playerPos //Vector3.add(playerPos, cameraDir)
+        cameraNode.position = cameraPos.toFloat3()
+        cameraNode.lookAt(cameraLookAt.toFloat3(), upDir.toFloat3())
     }
 
     fun setGestureListener() {
@@ -317,9 +322,7 @@ class MainSceneView @JvmOverloads constructor(
                 e: MotionEvent,
                 node: Node?
             ) {
-                if (node != null) {
 
-                }
             }
         }
     }
