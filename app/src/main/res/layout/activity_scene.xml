@@ -22,10 +22,25 @@
         android:id="@+id/fpsView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="10dp"
+        android:layout_margin="4dp"
+        android:padding="4dp"
         android:text="fps"
+        android:textSize="12sp"
         android:textColor="@color/gray"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ToggleButton
+        android:id="@+id/toggleMode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="#00000000"
+        android:text="ToggleButton"
+        android:textColor="@color/gray"
+        android:textOff="Observe"
+        android:textOn="Follow"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

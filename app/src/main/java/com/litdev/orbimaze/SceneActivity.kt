@@ -7,11 +7,14 @@ import android.os.Handler
 import android.os.Looper
 import android.view.View
 import android.widget.TextView
+import android.widget.ToggleButton
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import com.litdev.orbimaze.R
+import io.github.sceneview.collision.Vector3
 
 class SceneActivity : AppCompatActivity() {
     lateinit var sceneView: MainSceneView
@@ -42,6 +45,14 @@ class SceneActivity : AppCompatActivity() {
             }
         }
         handler.postDelayed(updateRunnable, 0)
+
+        val toggleButton = findViewById<ToggleButton>(R.id.toggleMode)
+        toggleButton.setOnCheckedChangeListener { _, isChecked ->
+            sceneView.viewMode = if (isChecked) 1 else 0
+            if (!isChecked) {
+                sceneView.cameraDir = Vector3(0.0f, 0.0f, -1.0f)
+            }
+        }
     }
 
     @SuppressLint("DefaultLocale")

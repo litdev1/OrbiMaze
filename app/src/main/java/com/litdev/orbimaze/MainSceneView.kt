@@ -29,13 +29,13 @@ class MainSceneView @JvmOverloads constructor(
     val joints = mutableListOf<Joint>()
     val tubes = mutableListOf<Tube>()
 
-    var viewMode = 1
+    var viewMode = 0
     val nextJoints = mutableListOf<Joint>()
     var nextJoint = 0
     var wait = false
     var cameraDist = 10.0f
     var scaleFactor = 0.02f
-    val cameraMinDist = 0.01f
+    val cameraMinDist = 0.5f
     val cameraMaxDist = 20.0f
     var cameraRot = 0.0f
     var rotationFactor = 1.0f
