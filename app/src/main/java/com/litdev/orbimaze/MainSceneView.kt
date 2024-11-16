@@ -19,6 +19,7 @@ import io.github.sceneview.math.Position
 import io.github.sceneview.math.toFloat3
 import io.github.sceneview.node.Node
 import java.nio.ByteBuffer
+import kotlin.math.abs
 
 class MainSceneView @JvmOverloads constructor(
     context: Context,
@@ -27,6 +28,8 @@ class MainSceneView @JvmOverloads constructor(
 ) : SceneView(context, attrs, defStyleAttr) {
     val joints = mutableListOf<Joint>()
     val tubes = mutableListOf<Tube>()
+
+    var viewMode = 1
     val nextJoints = mutableListOf<Joint>()
     var nextJoint = 0
     var wait = false
@@ -37,6 +40,7 @@ class MainSceneView @JvmOverloads constructor(
     var cameraRot = 0.0f
     var rotationFactor = 1.0f
     var cameraDir = Vector3(0.0f, 0.0f, -1.0f)
+
     val player: Orb = Orb()
     val highlight: Orb = Orb()
     val enemies = mutableListOf<Orb>()
@@ -193,10 +197,29 @@ class MainSceneView @JvmOverloads constructor(
         }
 
         val playerPos = player.tube.pointV(player.r)
-        val playerDir = player.tube.direction(player.r).normalized()
+        val playerDir = player.tube.direction(player.r)
+        playerDir.x *= player.dir
+        playerDir.y *= player.dir
+        playerDir.z *= player.dir
 
-        val rot = Quaternion.axisAngle(upDir, -cameraRot) //rotation about vertical direction
-        cameraDir = Quaternion.rotateVector(rot, cameraDir)
+        if (viewMode == 0) {
+            val rot = Quaternion.axisAngle(upDir, -cameraRot) //rotation about vertical direction
+            cameraDir = Quaternion.rotateVector(rot, cameraDir)
+        } else {
+            val cameraDirLast = cameraDir //We could do a smooth transition to new
+            cameraDir = playerDir
+            cameraDir.x -= 0.1f
+            cameraDir.y -= 0.1f
+            cameraDir.z -= 0.1f
+            if (abs(cameraDir.y) > 0.99) { //Bug in viewer that fails to view vertically
+                cameraDir.x = 0.01f
+                cameraDir = cameraDir.normalized()
+            }
+            val lambda = 0.01f
+            cameraDir.x = (1.0f-lambda)*cameraDirLast.x + lambda*cameraDir.x
+            cameraDir.y = (1.0f-lambda)*cameraDirLast.y + lambda*cameraDir.y
+            cameraDir.z = (1.0f-lambda)*cameraDirLast.z + lambda*cameraDir.z
+        }
         val cameraPos = Vector3(
             playerPos.x - cameraDist * cameraDir.x,
             playerPos.y - cameraDist * cameraDir.y,
@@ -204,6 +227,9 @@ class MainSceneView @JvmOverloads constructor(
         val cameraLookAt = playerPos //Vector3.add(playerPos, cameraDir)
         cameraNode.position = cameraPos.toFloat3()
         cameraNode.lookAt(cameraLookAt.toFloat3(), upDir.toFloat3())
+        if (cameraNode.position.x.isNaN()) {
+            TODO("Camera failure")
+        }
 
         updateNextJoint()
     }
