@@ -41,6 +41,7 @@ class MainSceneView @JvmOverloads constructor(
     var rotationFactor = 1.0f
     var cameraDir = Vector3(0.0f, 0.0f, -1.0f)
 
+    var level = 2
     val player: Orb = Orb()
     val highlight: Orb = Orb()
     val enemies = mutableListOf<Orb>()
@@ -83,8 +84,8 @@ class MainSceneView @JvmOverloads constructor(
         cameraNode.apply {
             position = Position(x = 3.0f, y = 3.0f, z = 10.0f)
             focalLength = 28.0
-            near = 0.01f
-            far = 30.0f
+            near = cameraMinDist
+            far = cameraMaxDist*1.5f
         }
 
         val manipulator = Manipulator.Builder()
@@ -108,24 +109,47 @@ class MainSceneView @JvmOverloads constructor(
             .build(Manipulator.Mode.ORBIT)
         cameraManipulator = null
 
+        levelSet(level)
+    }
+
+    fun levelSet(level: Int) {
+        var numEnemy = 0
+        when(level)
+        {
+            0 -> {
+//                Generate(joints, tubes).simple()
+                Generate(joints, tubes).cube(2, 2, 2, 0.0f, 0.0f)
+                numEnemy = 0
+            }
+            1 -> {
+                Generate(joints, tubes).cube(3, 3, 3, 0.1f, 0.2f)
+                numEnemy = 1
+            }
+            2 -> {
+                Generate(joints, tubes).cube(7, 7, 7, 0.6f, 0.7f)
+                numEnemy = 5
+            }
+            3 -> {
+                Generate(joints, tubes).random(1000)
+                numEnemy = 10
+            }
+        }
         val gold = ContextCompat.getColor(context, R.color.gold)
         val silver = ContextCompat.getColor(context, R.color.silver)
 
         val materialLoader = materialLoader
-        val jointMaterial = materialLoader.createColorInstance(color = gold,
+        val jointMaterial = materialLoader.createColorInstance(
+            color = gold,
             metallic = 1.0f,
             roughness = 0.1f,
             reflectance = 0.8f
         )
-        val tubeMaterial = materialLoader.createColorInstance(color = silver,
+        val tubeMaterial = materialLoader.createColorInstance(
+            color = silver,
             metallic = 1.0f,
             roughness = 0.1f,
             reflectance = 0.8f
         )
-
-//        Generate(joints, tubes).simple()
-//          Generate(joints, tubes).random(1000)
-        Generate(joints, tubes).cube(7, 7, 7, 0.6f, 0.7f)
 
         for (tube in tubes) {
             tube.build(this, tubeMaterial, 12, 20, 0.05f)
@@ -141,7 +165,7 @@ class MainSceneView @JvmOverloads constructor(
         player.tubeSet(tubes.random(), 1, 0.3f)
         updateNextJoints()
 
-        for (i in 0..5) {
+        for (i in 0..< numEnemy) {
             val redEnemy = Orb()
             redEnemy.build(this, material.createInstance(), Color.RED, 0.1f, 2.0f)
             redEnemy.tubeSet(tubes.random(), 1, 0.5f)
@@ -158,7 +182,6 @@ class MainSceneView @JvmOverloads constructor(
         highlight.build(this, material1.createInstance(), Color.YELLOW, 0.075f, 1.0f)
         highlight.tubeSet(tubes.random(), 1, 1.0f)
     }
-
     override fun onFrame(frameTimeNanos: Long) {
         //We want to handle all activity here based on recorded gestures
         super.onFrame(frameTimeNanos)

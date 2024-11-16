@@ -55,7 +55,7 @@ class Tube(val joint1: Joint,
         val pos1 = joint1.pos
         val pos2 = joint2.pos
         if (startDirection.length() == 0.0f) {
-            var startDirection = Vector3.subtract(joint2.pos, joint1.pos)
+            startDirection = Vector3.subtract(joint2.pos, joint1.pos)
             if (abs(startDirection.x) < abs(startDirection.y) ||
                 abs(startDirection.x) < abs(startDirection.z)) startDirection.x = 0.0f
             if (abs(startDirection.y) < abs(startDirection.x) ||
