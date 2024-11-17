@@ -83,6 +83,7 @@ class SceneActivity : AppCompatActivity() {
         levelText()
     }
 
+    @SuppressLint("DefaultLocale")
     fun levelText() {
         val level = sceneView.level
         var message = String.format("Level %d", level)
