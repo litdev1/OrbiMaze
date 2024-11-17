@@ -130,7 +130,7 @@ class MainSceneView @JvmOverloads constructor(
             .build(Manipulator.Mode.ORBIT)
         cameraManipulator = null
 
-        level = ApplicationClass.instance.level
+        level = 1 //ApplicationClass.instance.level
         levelSet()
     }
 
@@ -145,7 +145,7 @@ class MainSceneView @JvmOverloads constructor(
         moveCount = 0
         scaleCount = 0
         tapCount = 0
-        tapCount = 0
+        modeCount = 0
 
         numEnemy = 0
         numPill = 0
@@ -291,25 +291,12 @@ class MainSceneView @JvmOverloads constructor(
     }
 
     fun updateGame() {
-        if (level < 3) {
-            var nextLevel = false
-            when(level) {
-                1 -> {
-                    if (flingCount > 1 &&
-                        pressCount > 1 &&
-                        moveCount > 2 &&
-                        scaleCount > 1 &&
-                        tapCount > 4) {
-                        nextLevel = true
-                    }
-                }
-                2 -> {
-                    if (modeCount > 1) {
-                        nextLevel = true
-                    }
-                }
-            }
-            if (nextLevel) {
+        if (level == 1) {
+            if (flingCount > 1 &&
+                pressCount > 1 &&
+                moveCount > 2 &&
+                scaleCount > 1 &&
+                tapCount > 4) {
                 gameState = 1
                 level++
                 if (ApplicationClass.instance.level < level) {

@@ -17,6 +17,7 @@ class ApplicationClass: Application() {
         super.onCreate()
 
         load()
+        level = 7
         if (firstTime) {
             save()
         }

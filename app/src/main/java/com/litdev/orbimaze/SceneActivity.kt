@@ -65,6 +65,16 @@ class SceneActivity : AppCompatActivity() {
             }
             sceneView.levelSet()
         }
+
+        val previousLevel = findViewById<Button>(R.id.previousLevel)
+        previousLevel.setOnClickListener() { _ ->
+            sceneView.gameState = -1
+            sceneView.level--
+            if (sceneView.level < 0) {
+                sceneView.level = ApplicationClass.instance.level
+            }
+            sceneView.levelSet()
+        }
     }
 
     @SuppressLint("DefaultLocale")
