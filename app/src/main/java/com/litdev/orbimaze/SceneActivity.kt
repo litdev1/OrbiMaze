@@ -19,6 +19,7 @@ import io.github.sceneview.collision.Vector3
 class SceneActivity : AppCompatActivity() {
     lateinit var sceneView: MainSceneView
     lateinit var textView: TextView
+    lateinit var infoView: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,6 +37,7 @@ class SceneActivity : AppCompatActivity() {
 
         sceneView = findViewById<MainSceneView>(R.id.sceneView)
         textView = findViewById<TextView>(R.id.fpsView)
+        infoView = findViewById<TextView>(R.id.infoView)
 
         val handler = Handler(Looper.getMainLooper())
         val updateRunnable = object : Runnable {
@@ -52,12 +54,24 @@ class SceneActivity : AppCompatActivity() {
             if (!isChecked) {
                 sceneView.cameraDir = Vector3(0.0f, 0.0f, -1.0f)
             }
+            sceneView.modeCount++
         }
     }
 
     @SuppressLint("DefaultLocale")
     private fun updateUI() {
         textView.text = String.format("%d fps", sceneView.fps)
+        levelText()
+    }
+
+    fun levelText() {
+        val level = sceneView.level
+        var message = String.format("Level %d", level)
+        when (level) {
+            1 -> message += ApplicationClass.instance.getString(R.string.level1)
+            2 -> message += ApplicationClass.instance.getString(R.string.level2)
+        }
+        infoView.text = message
     }
 
     private fun Activity.setFullScreen(

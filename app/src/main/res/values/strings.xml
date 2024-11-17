@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">OrbiMaze</string>
+    <string name="level1">\n\nYou are the green orb.
+    \n\nThe yellow node highlight shows the next path your orb will take.
+    You can toggle this path with a short tap.
+    \n\nRotate the view with left/right movement and speed/slow your orb with up/down movement.
+    \n\nPause your orb with a long press, and restart it with a fling.
+    \n\nMove in or out with a 2-finger scale gesture.
+    \n\nPractice these a few times to get to the next level.</string>
+    <string name="level2">\n\nCollect the blue orbs and avaoid the red orb.
+    \n\nYou can toggle between an observation and follow mode using the top right button.</string>
 </resources>

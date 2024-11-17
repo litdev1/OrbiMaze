@@ -4,6 +4,9 @@ import android.content.Context
 import android.graphics.Color
 import android.util.AttributeSet
 import android.view.MotionEvent
+import android.view.View
+import android.widget.TextView
+import android.widget.ToggleButton
 import androidx.core.content.ContextCompat
 import com.google.android.filament.Material
 import com.google.android.filament.utils.Manipulator
@@ -30,9 +33,11 @@ class MainSceneView @JvmOverloads constructor(
     val tubes = mutableListOf<Tube>()
 
     var viewMode = 0
+    var level = 0
     val nextJoints = mutableListOf<Joint>()
     var nextJoint = 0
     var wait = false
+    var cameraCatchup = 0.025f
     var cameraDist = 10.0f
     var scaleFactor = 0.02f
     val cameraMinDist = 0.5f
@@ -40,8 +45,20 @@ class MainSceneView @JvmOverloads constructor(
     var cameraRot = 0.0f
     var rotationFactor = 1.0f
     var cameraDir = Vector3(0.0f, 0.0f, -1.0f)
+    var speedMultiplier = 1.0f
+    var speedFactor = 0.0025f
+    val speedMinMultiplier = 0.1f
+    val speedMaxMultiplier = 5.0f
 
-    var level = 2
+    var lastDistanceX = 0.0f
+    var lastDistanceY = 0.0f
+    var flingCount = 0
+    var pressCount = 0
+    var moveCount = 0
+    var scaleCount = 0
+    var tapCount = 0
+    var modeCount = 0
+
     val player: Orb = Orb()
     val highlight: Orb = Orb()
     val enemies = mutableListOf<Orb>()
@@ -84,7 +101,7 @@ class MainSceneView @JvmOverloads constructor(
         cameraNode.apply {
             position = Position(x = 3.0f, y = 3.0f, z = 10.0f)
             focalLength = 28.0
-            near = cameraMinDist
+            near = 0.01f
             far = cameraMaxDist*1.5f
         }
 
@@ -109,29 +126,45 @@ class MainSceneView @JvmOverloads constructor(
             .build(Manipulator.Mode.ORBIT)
         cameraManipulator = null
 
-        levelSet(level)
+        level = ApplicationClass.instance.level
+        levelSet()
     }
 
-    fun levelSet(level: Int) {
+    fun levelSet() {
+        lastDistanceX = 0.0f
+        lastDistanceY = 0.0f
+        flingCount = 0
+        pressCount = 0
+        moveCount = 0
+        scaleCount = 0
+        tapCount = 0
+        tapCount = 0
         var numEnemy = 0
+        var numPill = 0
+        var enemySpeed = 0.5f
+        var pillSpeed = 0.5f
         when(level)
         {
-            0 -> {
+            1 -> {
 //                Generate(joints, tubes).simple()
                 Generate(joints, tubes).cube(2, 2, 2, 0.0f, 0.0f)
-                numEnemy = 0
-            }
-            1 -> {
-                Generate(joints, tubes).cube(3, 3, 3, 0.1f, 0.2f)
-                numEnemy = 1
             }
             2 -> {
-                Generate(joints, tubes).cube(7, 7, 7, 0.6f, 0.7f)
-                numEnemy = 5
+                Generate(joints, tubes).cube(3, 3, 3, 0.1f, 0.2f)
+                numEnemy = 1
+                numPill = 1
+                enemySpeed = 0.0f
+                pillSpeed = 0.0f
             }
             3 -> {
+                Generate(joints, tubes).cube(7, 7, 7, 0.6f, 0.7f)
+                numEnemy = 5
+                numPill = 5
+            }
+            4 -> {
                 Generate(joints, tubes).random(1000)
                 numEnemy = 10
+                numPill = 5
             }
         }
         val gold = ContextCompat.getColor(context, R.color.gold)
@@ -168,12 +201,13 @@ class MainSceneView @JvmOverloads constructor(
         for (i in 0..< numEnemy) {
             val redEnemy = Orb()
             redEnemy.build(this, material.createInstance(), Color.RED, 0.1f, 2.0f)
-            redEnemy.tubeSet(tubes.random(), 1, 0.5f)
+            redEnemy.tubeSet(tubes.random(), 1, enemySpeed)
             enemies.add(redEnemy)
-
+        }
+        for (i in 0..< numEnemy) {
             val blueEnemy = Orb()
             blueEnemy.build(this, material.createInstance(), Color.BLUE, 0.1f, 2.0f)
-            blueEnemy.tubeSet(tubes.random(), 1, 0.5f)
+            blueEnemy.tubeSet(tubes.random(), 1, pillSpeed)
             enemies.add(blueEnemy)
         }
 
@@ -182,6 +216,7 @@ class MainSceneView @JvmOverloads constructor(
         highlight.build(this, material1.createInstance(), Color.YELLOW, 0.075f, 1.0f)
         highlight.tubeSet(tubes.random(), 1, 1.0f)
     }
+
     override fun onFrame(frameTimeNanos: Long) {
         //We want to handle all activity here based on recorded gestures
         super.onFrame(frameTimeNanos)
@@ -211,7 +246,7 @@ class MainSceneView @JvmOverloads constructor(
         }
 
         if (!wait) {
-            player.r += player.dir * player.speed * dt / player.tube.length
+            player.r += player.dir * player.speed * speedMultiplier * dt / player.tube.length
             if (player.r < 0 || player.r > 1) {
                 player.newTube(nextJoints[nextJoint])
                 updateNextJoints()
@@ -229,19 +264,18 @@ class MainSceneView @JvmOverloads constructor(
             val rot = Quaternion.axisAngle(upDir, -cameraRot) //rotation about vertical direction
             cameraDir = Quaternion.rotateVector(rot, cameraDir)
         } else {
-            val cameraDirLast = cameraDir //We could do a smooth transition to new
+            val cameraDirLast = cameraDir.normalized() //For a smooth transition
             cameraDir = playerDir
             cameraDir.x -= 0.1f
             cameraDir.y -= 0.1f
             cameraDir.z -= 0.1f
-            if (abs(cameraDir.y) > 0.99) { //Bug in viewer that fails to view vertically
+            if (abs(cameraDir.y) > 0.99) { //Issue when view direction is same as up direction
                 cameraDir.x = 0.01f
                 cameraDir = cameraDir.normalized()
             }
-            val lambda = 0.01f
-            cameraDir.x = (1.0f-lambda)*cameraDirLast.x + lambda*cameraDir.x
-            cameraDir.y = (1.0f-lambda)*cameraDirLast.y + lambda*cameraDir.y
-            cameraDir.z = (1.0f-lambda)*cameraDirLast.z + lambda*cameraDir.z
+            cameraDir.x = (1.0f-cameraCatchup)*cameraDirLast.x + cameraCatchup*cameraDir.x
+            cameraDir.y = (1.0f-cameraCatchup)*cameraDirLast.y + cameraCatchup*cameraDir.y
+            cameraDir.z = (1.0f-cameraCatchup)*cameraDirLast.z + cameraCatchup*cameraDir.z
         }
         val cameraPos = Vector3(
             playerPos.x - cameraDist * cameraDir.x,
@@ -255,6 +289,36 @@ class MainSceneView @JvmOverloads constructor(
         }
 
         updateNextJoint()
+        updateGame()
+
+        when(level) {
+            1 -> {
+                if (flingCount > 1 &&
+                    pressCount > 1 &&
+                    moveCount > 2 &&
+                    scaleCount > 1 &&
+                    tapCount > 4) {
+                    if (ApplicationClass.instance.level < level+1) {
+                        ApplicationClass.instance.level = level++
+                        ApplicationClass.instance.save()
+                    }
+                    levelSet()
+                }
+            }
+            2 -> {
+                if (modeCount > 1) {
+                    if (ApplicationClass.instance.level < level+1) {
+                        ApplicationClass.instance.level = level++
+                        ApplicationClass.instance.save()
+                    }
+                    levelSet()
+                }
+            }
+        }
+    }
+
+    fun updateGame() {
+
     }
 
     fun updateNextJoints() {
@@ -275,8 +339,6 @@ class MainSceneView @JvmOverloads constructor(
         highlight.positionSet(nextJoints[nextJoint].pos.toFloat3())
     }
 
-    var lastDistanceX = 0.0f
-    var lastDistanceY = 0.0f
     fun setGestureListener() {
         onGestureListener = object : OnGestureListener {
             override fun onContextClick(
@@ -314,6 +376,7 @@ class MainSceneView @JvmOverloads constructor(
                 velocity: Float2
             ) {
                 wait = false
+                flingCount++;
             }
 
             override fun onLongPress(
@@ -321,6 +384,7 @@ class MainSceneView @JvmOverloads constructor(
                 node: Node?
             ) {
                 wait = true
+                pressCount++
             }
 
             override fun onMove(
@@ -329,6 +393,10 @@ class MainSceneView @JvmOverloads constructor(
                 node: Node?
             ) {
                 cameraRot = (detector.lastDistanceX!!-lastDistanceX)*rotationFactor
+                val aa = (detector.lastDistanceY!!-lastDistanceY)*speedFactor
+                speedMultiplier -= (detector.lastDistanceY!!-lastDistanceY)*speedFactor
+                if (speedMultiplier < speedMinMultiplier) speedMultiplier = speedMinMultiplier
+                if (speedMultiplier > speedMaxMultiplier) speedMultiplier = speedMaxMultiplier
                 lastDistanceX = detector.lastDistanceX!!
                 lastDistanceY = detector.lastDistanceY!!
             }
@@ -338,7 +406,6 @@ class MainSceneView @JvmOverloads constructor(
                 e: MotionEvent,
                 node: Node?
             ) {
-                cameraRot = detector.lastDistanceX!!*rotationFactor
                 lastDistanceX = detector.lastDistanceX!!
                 lastDistanceY = detector.lastDistanceY!!
             }
@@ -349,6 +416,7 @@ class MainSceneView @JvmOverloads constructor(
                 node: Node?
             ) {
                 cameraRot = 0.0f
+                moveCount++
             }
 
             override fun onRotate(
@@ -398,7 +466,7 @@ class MainSceneView @JvmOverloads constructor(
                 e: MotionEvent,
                 node: Node?
             ) {
-
+                scaleCount++
             }
 
             override fun onScroll(
@@ -422,6 +490,7 @@ class MainSceneView @JvmOverloads constructor(
                 node: Node?
             ) {
                 nextJoint = (nextJoint + 1) % nextJoints.size
+                tapCount++
             }
 
             override fun onSingleTapUp(
