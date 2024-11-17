@@ -4,9 +4,6 @@ import android.content.Context
 import android.graphics.Color
 import android.util.AttributeSet
 import android.view.MotionEvent
-import android.view.View
-import android.widget.TextView
-import android.widget.ToggleButton
 import androidx.core.content.ContextCompat
 import com.google.android.filament.Material
 import com.google.android.filament.utils.Manipulator
@@ -292,7 +289,7 @@ class MainSceneView @JvmOverloads constructor(
         }
         val markForDelete = mutableListOf<Orb>()
         for (pill in pills) {
-            if (pill.tube == pill.tube) {
+            if (pill.tube == player.tube) {
                 val dist = (pill.positionGet() - player.positionGet()).toVector3().length()
                 if (dist < pill.sphere.geometry.radius + player.sphere.geometry.radius) {
                     markForDelete.add(pill)
@@ -454,7 +451,7 @@ class MainSceneView @JvmOverloads constructor(
                 velocity: Float2
             ) {
                 wait = false
-                flingCount++;
+                flingCount++
             }
 
             override fun onLongPress(
@@ -471,7 +468,6 @@ class MainSceneView @JvmOverloads constructor(
                 node: Node?
             ) {
                 cameraRot = (detector.lastDistanceX!!-lastDistanceX)*rotationFactor
-                val aa = (detector.lastDistanceY!!-lastDistanceY)*speedFactor
                 speedMultiplier -= (detector.lastDistanceY!!-lastDistanceY)*speedFactor
                 if (speedMultiplier < speedMinMultiplier) speedMultiplier = speedMinMultiplier
                 if (speedMultiplier > speedMaxMultiplier) speedMultiplier = speedMaxMultiplier

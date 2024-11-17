@@ -1,10 +1,6 @@
 package com.litdev.orbimaze
 
 import android.app.Application
-import kotlin.collections.component1
-import kotlin.collections.component2
-import kotlin.collections.iterator
-import kotlin.collections.set
 
 class ApplicationClass: Application() {
     var firstTime: Boolean = true
