@@ -20,6 +20,7 @@ import io.github.sceneview.gesture.RotateGestureDetector
 import io.github.sceneview.gesture.ScaleGestureDetector
 import io.github.sceneview.math.Position
 import io.github.sceneview.math.toFloat3
+import io.github.sceneview.math.toVector3
 import io.github.sceneview.node.Node
 import java.nio.ByteBuffer
 import kotlin.math.abs
@@ -34,6 +35,8 @@ class MainSceneView @JvmOverloads constructor(
 
     var viewMode = 0
     var level = 0
+    var numEnemy = 0
+    var numPill = 0
     val nextJoints = mutableListOf<Joint>()
     var nextJoint = 0
     var wait = false
@@ -62,10 +65,12 @@ class MainSceneView @JvmOverloads constructor(
     val player: Orb = Orb()
     val highlight: Orb = Orb()
     val enemies = mutableListOf<Orb>()
+    val pills = mutableListOf<Orb>()
     var lastTimeNanos: Long = Long.MAX_VALUE
     var fps: Int = 0
     val upDir = Vector3(0.0f, 1.0f, 0.0f)
     val rand = java.util.Random(System.currentTimeMillis())
+    var gameState = 0
 
     init {
         setGestureListener()
@@ -131,6 +136,10 @@ class MainSceneView @JvmOverloads constructor(
     }
 
     fun levelSet() {
+        val children = childNodes.toList()
+        this.removeChildNodes(children)
+        gameState = 0
+
         lastDistanceX = 0.0f
         lastDistanceY = 0.0f
         flingCount = 0
@@ -139,8 +148,9 @@ class MainSceneView @JvmOverloads constructor(
         scaleCount = 0
         tapCount = 0
         tapCount = 0
-        var numEnemy = 0
-        var numPill = 0
+
+        numEnemy = 0
+        numPill = 0
         var enemySpeed = 0.5f
         var pillSpeed = 0.5f
         when(level)
@@ -151,22 +161,46 @@ class MainSceneView @JvmOverloads constructor(
             }
             2 -> {
                 Generate(joints, tubes).cube(3, 3, 3, 0.1f, 0.2f)
-                numEnemy = 1
+                numEnemy = 2
                 numPill = 1
                 enemySpeed = 0.0f
                 pillSpeed = 0.0f
             }
             3 -> {
+                Generate(joints, tubes).cube(4, 4, 4, 0.1f, 0.2f)
+                numEnemy = 3
+                numPill = 3
+                enemySpeed = 0.5f
+                pillSpeed = 0.0f
+            }
+            4 -> {
+                Generate(joints, tubes).cube(5, 5, 5, 0.1f, 0.2f)
+                numEnemy = 5
+                numPill = 5
+                enemySpeed = 0.5f
+                pillSpeed = 0.25f
+            }
+            5 -> {
+                Generate(joints, tubes).cube(6, 6, 6, 0.1f, 0.2f)
+                numEnemy = 5
+                numPill = 5
+                enemySpeed = 0.5f
+                pillSpeed = 0.25f
+            }
+            6 -> {
                 Generate(joints, tubes).cube(7, 7, 7, 0.6f, 0.7f)
                 numEnemy = 5
                 numPill = 5
+                enemySpeed = 0.5f
+                pillSpeed = 0.5f
             }
-            4 -> {
+            7 -> {
                 Generate(joints, tubes).random(1000)
                 numEnemy = 10
                 numPill = 5
             }
         }
+
         val gold = ContextCompat.getColor(context, R.color.gold)
         val silver = ContextCompat.getColor(context, R.color.silver)
 
@@ -194,22 +228,24 @@ class MainSceneView @JvmOverloads constructor(
         val buffer = readAsset("materials/emissive_colored.filamat")
         val material = Material.Builder().payload(buffer, buffer.remaining()).build(engine)
 
+        enemies.clear()
+        for (i in 0..< numEnemy) {
+            val enemy = Orb()
+            enemy.build(this, material.createInstance(), Color.RED, 0.1f, 2.0f)
+            enemy.tubeSet(tubes.random(), 1, enemySpeed)
+            enemies.add(enemy)
+        }
+        pills.clear()
+        for (i in 0..< numPill) {
+            val pill = Orb()
+            pill.build(this, material.createInstance(), Color.BLUE, 0.1f, 2.0f)
+            pill.tubeSet(tubes.random(), 1, pillSpeed)
+            pills.add(pill)
+        }
+
         player.build(this, material.createInstance(), Color.GREEN, 0.1f, 2.0f)
         player.tubeSet(tubes.random(), 1, 0.3f)
         updateNextJoints()
-
-        for (i in 0..< numEnemy) {
-            val redEnemy = Orb()
-            redEnemy.build(this, material.createInstance(), Color.RED, 0.1f, 2.0f)
-            redEnemy.tubeSet(tubes.random(), 1, enemySpeed)
-            enemies.add(redEnemy)
-        }
-        for (i in 0..< numEnemy) {
-            val blueEnemy = Orb()
-            blueEnemy.build(this, material.createInstance(), Color.BLUE, 0.1f, 2.0f)
-            blueEnemy.tubeSet(tubes.random(), 1, pillSpeed)
-            enemies.add(blueEnemy)
-        }
 
         val buffer1 = readAsset("materials/emissive_colored.filamat")
         val material1 = Material.Builder().payload(buffer1, buffer1.remaining()).build(engine)
@@ -236,6 +272,50 @@ class MainSceneView @JvmOverloads constructor(
 
     fun update(dt: Float) {
         if (dt < 0.0f || dt > 1.0f) return
+
+        updateSprites(dt)
+        updateCamera()
+        updateNextJoint()
+        updateGame()
+        updateLevel()
+    }
+
+    fun updateGame() {
+        for (enemy in enemies) {
+            if (enemy.tube == player.tube) {
+                val dist = (enemy.positionGet() - player.positionGet()).toVector3().length()
+                if (dist < enemy.sphere.geometry.radius + player.sphere.geometry.radius) {
+                    gameState = -1
+                    levelSet()
+                }
+            }
+        }
+        val markForDelete = mutableListOf<Orb>()
+        for (pill in pills) {
+            if (pill.tube == pill.tube) {
+                val dist = (pill.positionGet() - player.positionGet()).toVector3().length()
+                if (dist < pill.sphere.geometry.radius + player.sphere.geometry.radius) {
+                    markForDelete.add(pill)
+                }
+            }
+        }
+        for (pill in markForDelete) {
+            removeChildNode(pill.sphere)
+            removeChildNode(pill.lightNode)
+            pills.remove(pill)
+        }
+        if (pills.size == 0) {
+            gameState = 1
+            level++
+            if (ApplicationClass.instance.level < level) {
+                ApplicationClass.instance.level = level
+                ApplicationClass.instance.save()
+            }
+            levelSet()
+        }
+    }
+
+    fun updateSprites(dt: Float) {
         for (enemy in enemies) {
             enemy.r += enemy.dir * enemy.speed * dt / enemy.tube.length
             if (enemy.r < 0 || enemy.r > 1)
@@ -253,7 +333,9 @@ class MainSceneView @JvmOverloads constructor(
             }
             player.positionSet(player.tube.pointP(player.r))
         }
+    }
 
+    fun updateCamera() {
         val playerPos = player.tube.pointV(player.r)
         val playerDir = player.tube.direction(player.r)
         playerDir.x *= player.dir
@@ -287,10 +369,10 @@ class MainSceneView @JvmOverloads constructor(
         if (cameraNode.position.x.isNaN()) {
             TODO("Camera failure")
         }
+    }
 
-        updateNextJoint()
-        updateGame()
-
+    fun updateLevel() {
+        var nextLevel = false
         when(level) {
             1 -> {
                 if (flingCount > 1 &&
@@ -298,27 +380,23 @@ class MainSceneView @JvmOverloads constructor(
                     moveCount > 2 &&
                     scaleCount > 1 &&
                     tapCount > 4) {
-                    if (ApplicationClass.instance.level < level+1) {
-                        ApplicationClass.instance.level = level++
-                        ApplicationClass.instance.save()
-                    }
-                    levelSet()
+                    nextLevel = true
                 }
             }
             2 -> {
                 if (modeCount > 1) {
-                    if (ApplicationClass.instance.level < level+1) {
-                        ApplicationClass.instance.level = level++
-                        ApplicationClass.instance.save()
-                    }
-                    levelSet()
+                    nextLevel = true
                 }
             }
         }
-    }
-
-    fun updateGame() {
-
+        if (nextLevel) {
+            level++
+            if (ApplicationClass.instance.level < level) {
+                ApplicationClass.instance.level = level
+                ApplicationClass.instance.save()
+            }
+            levelSet()
+        }
     }
 
     fun updateNextJoints() {
