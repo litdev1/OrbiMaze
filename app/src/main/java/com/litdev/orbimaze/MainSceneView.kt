@@ -44,7 +44,8 @@ class MainSceneView @JvmOverloads constructor(
     val cameraMaxDist = 20.0f
     var cameraRot = 0.0f
     var rotationFactor = 1.0f
-    var cameraDir = Vector3(0.0f, 0.0f, -1.0f)
+    val cameraDirStart = Vector3(0.0f, -0.3f, -1.0f).normalized()
+    var cameraDir = cameraDirStart
     var speedMultiplier = 1.0f
     var speedFactor = 0.0025f
     val speedMinMultiplier = 0.1f
@@ -61,13 +62,14 @@ class MainSceneView @JvmOverloads constructor(
 
     val player: Orb = Orb()
     val highlight: Orb = Orb()
+    val secondaryHighlights = mutableListOf<Orb>()
     val enemies = mutableListOf<Orb>()
     val pills = mutableListOf<Orb>()
     var lastTimeNanos: Long = Long.MAX_VALUE
     var fps: Int = 0
     val upDir = Vector3(0.0f, 1.0f, 0.0f)
     val rand = java.util.Random(System.currentTimeMillis())
-    var gameState = 0
+    var gameState = -1
 
     init {
         setGestureListener()
@@ -135,7 +137,6 @@ class MainSceneView @JvmOverloads constructor(
     fun levelSet() {
         val children = childNodes.toList()
         this.removeChildNodes(children)
-        gameState = 0
 
         lastDistanceX = 0.0f
         lastDistanceY = 0.0f
@@ -171,14 +172,14 @@ class MainSceneView @JvmOverloads constructor(
                 pillSpeed = 0.0f
             }
             4 -> {
-                Generate(joints, tubes).cube(5, 5, 5, 0.1f, 0.2f)
+                Generate(joints, tubes).cube(5, 5, 5, 0.2f, 0.5f)
                 numEnemy = 5
                 numPill = 5
                 enemySpeed = 0.5f
                 pillSpeed = 0.25f
             }
             5 -> {
-                Generate(joints, tubes).cube(6, 6, 6, 0.1f, 0.2f)
+                Generate(joints, tubes).cube(6, 6, 6, 0.4f, 0.6f)
                 numEnemy = 5
                 numPill = 5
                 enemySpeed = 0.5f
@@ -192,7 +193,7 @@ class MainSceneView @JvmOverloads constructor(
                 pillSpeed = 0.5f
             }
             7 -> {
-                Generate(joints, tubes).random(1000)
+                Generate(joints, tubes).random(500)
                 numEnemy = 10
                 numPill = 5
             }
@@ -240,23 +241,32 @@ class MainSceneView @JvmOverloads constructor(
             pills.add(pill)
         }
 
-        player.build(this, material.createInstance(), Color.GREEN, 0.1f, 2.0f)
+        player.build(this, material.createInstance(), Color.MAGENTA, 0.125f, 2.0f)
         player.tubeSet(tubes.random(), 1, 0.3f)
         updateNextJoints()
 
         val buffer1 = readAsset("materials/emissive_colored.filamat")
         val material1 = Material.Builder().payload(buffer1, buffer1.remaining()).build(engine)
-        highlight.build(this, material1.createInstance(), Color.YELLOW, 0.075f, 1.0f)
-        highlight.tubeSet(tubes.random(), 1, 1.0f)
+        highlight.build(this, material1.createInstance(), Color.YELLOW, 0.125f, 1.0f)
+
+        secondaryHighlights.clear()
+        for (i in 0..< 10)
+        {
+            val orb = Orb()
+            orb.build(this, material1.createInstance(), Color.YELLOW, 0.075f, 1.0f)
+            secondaryHighlights.add(orb)
+        }
+
+        gameState = 0
     }
 
     override fun onFrame(frameTimeNanos: Long) {
-        //We want to handle all activity here based on recorded gestures
         super.onFrame(frameTimeNanos)
         val deltaTime = (frameTimeNanos - lastTimeNanos) / 1000000
         fps = (1000 / deltaTime).toInt()
         lastTimeNanos = frameTimeNanos
 
+        if (gameState != 0) return
         update(deltaTime.toFloat()/1000.0f)
     }
 
@@ -274,41 +284,70 @@ class MainSceneView @JvmOverloads constructor(
         updateCamera()
         updateNextJoint()
         updateGame()
-        updateLevel()
+
+        if (gameState != 0) {
+            levelSet()
+        }
     }
 
     fun updateGame() {
-        for (enemy in enemies) {
-            if (enemy.tube == player.tube) {
-                val dist = (enemy.positionGet() - player.positionGet()).toVector3().length()
-                if (dist < enemy.sphere.geometry.radius + player.sphere.geometry.radius) {
-                    gameState = -1
-                    levelSet()
+        if (level < 3) {
+            var nextLevel = false
+            when(level) {
+                1 -> {
+                    if (flingCount > 1 &&
+                        pressCount > 1 &&
+                        moveCount > 2 &&
+                        scaleCount > 1 &&
+                        tapCount > 4) {
+                        nextLevel = true
+                    }
+                }
+                2 -> {
+                    if (modeCount > 1) {
+                        nextLevel = true
+                    }
                 }
             }
-        }
-        val markForDelete = mutableListOf<Orb>()
-        for (pill in pills) {
-            if (pill.tube == player.tube) {
-                val dist = (pill.positionGet() - player.positionGet()).toVector3().length()
-                if (dist < pill.sphere.geometry.radius + player.sphere.geometry.radius) {
-                    markForDelete.add(pill)
+            if (nextLevel) {
+                gameState = 1
+                level++
+                if (ApplicationClass.instance.level < level) {
+                    ApplicationClass.instance.level = level
+                    ApplicationClass.instance.save()
                 }
             }
-        }
-        for (pill in markForDelete) {
-            removeChildNode(pill.sphere)
-            removeChildNode(pill.lightNode)
-            pills.remove(pill)
-        }
-        if (pills.size == 0) {
-            gameState = 1
-            level++
-            if (ApplicationClass.instance.level < level) {
-                ApplicationClass.instance.level = level
-                ApplicationClass.instance.save()
+        } else {
+            for (enemy in enemies) {
+                if (enemy.tube == player.tube) {
+                    val dist = (enemy.positionGet() - player.positionGet()).toVector3().length()
+                    if (dist < enemy.sphere.geometry.radius + player.sphere.geometry.radius) {
+                        gameState = -1
+                    }
+                }
             }
-            levelSet()
+            val markForDelete = mutableListOf<Orb>()
+            for (pill in pills) {
+                if (pill.tube == player.tube) {
+                    val dist = (pill.positionGet() - player.positionGet()).toVector3().length()
+                    if (dist < pill.sphere.geometry.radius + player.sphere.geometry.radius) {
+                        markForDelete.add(pill)
+                    }
+                }
+            }
+            for (pill in markForDelete) {
+                removeChildNode(pill.sphere)
+                removeChildNode(pill.lightNode)
+                pills.remove(pill)
+            }
+            if (pills.size == 0) {
+                gameState = 1
+                level++
+                if (ApplicationClass.instance.level < level) {
+                    ApplicationClass.instance.level = level
+                    ApplicationClass.instance.save()
+                }
+            }
         }
     }
 
@@ -368,34 +407,6 @@ class MainSceneView @JvmOverloads constructor(
         }
     }
 
-    fun updateLevel() {
-        var nextLevel = false
-        when(level) {
-            1 -> {
-                if (flingCount > 1 &&
-                    pressCount > 1 &&
-                    moveCount > 2 &&
-                    scaleCount > 1 &&
-                    tapCount > 4) {
-                    nextLevel = true
-                }
-            }
-            2 -> {
-                if (modeCount > 1) {
-                    nextLevel = true
-                }
-            }
-        }
-        if (nextLevel) {
-            level++
-            if (ApplicationClass.instance.level < level) {
-                ApplicationClass.instance.level = level
-                ApplicationClass.instance.save()
-            }
-            levelSet()
-        }
-    }
-
     fun updateNextJoints() {
         nextJoints.clear()
         val endJoint = if (player.dir > 0) player.tube.joint2 else player.tube.joint1
@@ -412,6 +423,15 @@ class MainSceneView @JvmOverloads constructor(
 
     fun updateNextJoint() {
         highlight.positionSet(nextJoints[nextJoint].pos.toFloat3())
+        for (orb in secondaryHighlights) {
+            orb.positionSet(nextJoints[nextJoint].pos.toFloat3())
+        }
+        var i = 0
+        for (joint in nextJoints) {
+            if (joint != nextJoints[nextJoint]) {
+                secondaryHighlights[i++].positionSet(joint.pos.toFloat3())
+            }
+        }
     }
 
     fun setGestureListener() {

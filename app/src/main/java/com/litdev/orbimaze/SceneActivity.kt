@@ -6,6 +6,10 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.Button
+import android.widget.Spinner
 import android.widget.TextView
 import android.widget.ToggleButton
 import androidx.appcompat.app.AppCompatActivity
@@ -52,9 +56,19 @@ class SceneActivity : AppCompatActivity() {
         toggleButton.setOnCheckedChangeListener { _, isChecked ->
             sceneView.viewMode = if (isChecked) 1 else 0
             if (!isChecked) {
-                sceneView.cameraDir = Vector3(0.0f, 0.0f, -1.0f)
+                sceneView.cameraDir = sceneView.cameraDirStart
             }
             sceneView.modeCount++
+        }
+
+        val nextLevel = findViewById<Button>(R.id.nextLevel)
+        nextLevel.setOnClickListener() { _ ->
+            sceneView.gameState = -1
+            sceneView.level++
+            if (sceneView.level > ApplicationClass.instance.level) {
+                sceneView.level = 1
+            }
+            sceneView.levelSet()
         }
     }
 
