@@ -168,14 +168,14 @@ class MainSceneView @JvmOverloads constructor(
                 Generate(joints, tubes).cube(4, 4, 4, 0.1f, 0.2f)
                 numEnemy = 3
                 numPill = 3
-                enemySpeed = 0.5f
+                enemySpeed = 0.25f
                 pillSpeed = 0.0f
             }
             4 -> {
                 Generate(joints, tubes).cube(5, 5, 5, 0.2f, 0.5f)
                 numEnemy = 5
                 numPill = 5
-                enemySpeed = 0.5f
+                enemySpeed = 0.35f
                 pillSpeed = 0.25f
             }
             5 -> {
