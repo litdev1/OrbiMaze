@@ -5,6 +5,7 @@ import android.app.Application
 class ApplicationClass: Application() {
     var firstTime: Boolean = true
     var level: Int = 1
+    val maxLevel = 10
 
     val version: Int = 1
 
@@ -17,7 +18,7 @@ class ApplicationClass: Application() {
         super.onCreate()
 
         load()
-        level = 7
+        level = maxLevel
         if (firstTime) {
             save()
         }

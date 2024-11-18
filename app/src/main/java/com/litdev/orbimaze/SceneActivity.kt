@@ -70,7 +70,7 @@ class SceneActivity : AppCompatActivity() {
         previousLevel.setOnClickListener() { _ ->
             sceneView.gameState = -1
             sceneView.level--
-            if (sceneView.level < 0) {
+            if (sceneView.level < 1) {
                 sceneView.level = ApplicationClass.instance.level
             }
             sceneView.levelSet()

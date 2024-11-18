@@ -44,7 +44,7 @@ class MainSceneView @JvmOverloads constructor(
     val cameraMaxDist = 20.0f
     var cameraRot = 0.0f
     var rotationFactor = 1.0f
-    val cameraDirStart = Vector3(0.0f, -0.3f, -1.0f).normalized()
+    val cameraDirStart = Vector3(0.0f, -0.5f, -1.0f).normalized()
     var cameraDir = cameraDirStart
     var speedMultiplier = 1.0f
     var speedFactor = 0.0025f
@@ -149,12 +149,11 @@ class MainSceneView @JvmOverloads constructor(
 
         numEnemy = 0
         numPill = 0
-        var enemySpeed = 0.5f
-        var pillSpeed = 0.5f
+        var enemySpeed = 0.0f
+        var pillSpeed = 0.0f
         when(level)
         {
             1 -> {
-//                Generate(joints, tubes).simple()
                 Generate(joints, tubes).cube(2, 2, 2, 0.0f, 0.0f)
             }
             2 -> {
@@ -165,37 +164,60 @@ class MainSceneView @JvmOverloads constructor(
                 pillSpeed = 0.0f
             }
             3 -> {
+                Generate(joints, tubes).cube(5, 1, 5, 0.0f, 1.5f)
+                numEnemy = 3
+                numPill = 3
+                enemySpeed = 0.25f
+                pillSpeed = 0.1f
+            }
+            4 -> {
                 Generate(joints, tubes).cube(4, 4, 4, 0.1f, 0.2f)
                 numEnemy = 3
                 numPill = 3
                 enemySpeed = 0.25f
                 pillSpeed = 0.0f
             }
-            4 -> {
+            5 -> {
+                Generate(joints, tubes).random(50, 0.5f, 10.0f)
+                        numEnemy = 3
+                numPill = 3
+                enemySpeed = 0.0f
+                pillSpeed = 0.0f
+            }
+            6 -> {
+                Generate(joints, tubes).cube(4, 4, 4, 0.1f, 0.2f)
+                        numEnemy = 3
+                numPill = 3
+                enemySpeed = 0.25f
+                pillSpeed = 0.0f
+            }
+            7 -> {
                 Generate(joints, tubes).cube(5, 5, 5, 0.2f, 0.5f)
                 numEnemy = 5
                 numPill = 5
-                enemySpeed = 0.35f
-                pillSpeed = 0.25f
+                enemySpeed = 0.25f
+                pillSpeed = 0.1f
             }
-            5 -> {
+            8 -> {
                 Generate(joints, tubes).cube(6, 6, 6, 0.4f, 0.6f)
                 numEnemy = 5
                 numPill = 5
-                enemySpeed = 0.5f
-                pillSpeed = 0.25f
+                enemySpeed = 0.25f
+                pillSpeed = 0.0f
             }
-            6 -> {
+            9 -> {
                 Generate(joints, tubes).cube(7, 7, 7, 0.6f, 0.7f)
                 numEnemy = 5
                 numPill = 5
-                enemySpeed = 0.5f
-                pillSpeed = 0.5f
+                enemySpeed = 0.25f
+                pillSpeed = 0.1f
             }
-            7 -> {
-                Generate(joints, tubes).random(500)
+            10 -> {
+                Generate(joints, tubes).random(500, 0.5f, 3.0f)
                 numEnemy = 10
                 numPill = 5
+                enemySpeed = 0.0f
+                pillSpeed = 0.0f
             }
         }
 
@@ -330,6 +352,10 @@ class MainSceneView @JvmOverloads constructor(
             if (pills.size == 0) {
                 gameState = 1
                 level++
+                if (level > ApplicationClass.instance.maxLevel) {
+                    gameState = 2 //Game completed!
+                    level = ApplicationClass.instance.maxLevel
+                }
                 if (ApplicationClass.instance.level < level) {
                     ApplicationClass.instance.level = level
                     ApplicationClass.instance.save()
@@ -346,6 +372,15 @@ class MainSceneView @JvmOverloads constructor(
                 enemy.newTube()
             }
             enemy.positionSet(enemy.tube.pointP(enemy.r))
+        }
+
+        for (pill in pills) {
+            pill.r += pill.dir * pill.speed * dt / pill.tube.length
+            if (pill.r < 0 || pill.r > 1)
+            {
+                pill.newTube()
+            }
+            pill.positionSet(pill.tube.pointP(pill.r))
         }
 
         if (!wait) {
