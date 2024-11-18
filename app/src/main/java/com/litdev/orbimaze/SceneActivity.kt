@@ -61,7 +61,7 @@ class SceneActivity : AppCompatActivity() {
             sceneView.gameState = -1
             sceneView.level++
             if (sceneView.level > ApplicationClass.instance.level) {
-                sceneView.level = 3
+                sceneView.level = 1
             }
             sceneView.levelSet()
         }
