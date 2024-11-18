@@ -18,7 +18,6 @@ class ApplicationClass: Application() {
         super.onCreate()
 
         load()
-        level = maxLevel
         if (firstTime) {
             save()
         }

@@ -130,7 +130,7 @@ class MainSceneView @JvmOverloads constructor(
             .build(Manipulator.Mode.ORBIT)
         cameraManipulator = null
 
-        level = 1 //ApplicationClass.instance.level
+        level = ApplicationClass.instance.level
         levelSet()
     }
 
@@ -203,7 +203,7 @@ class MainSceneView @JvmOverloads constructor(
                 numEnemy = 5
                 numPill = 5
                 enemySpeed = 0.25f
-                pillSpeed = 0.0f
+                pillSpeed = 0.1f
             }
             9 -> {
                 Generate(joints, tubes).cube(7, 7, 7, 0.6f, 0.7f)
@@ -216,8 +216,8 @@ class MainSceneView @JvmOverloads constructor(
                 Generate(joints, tubes).random(500, 0.5f, 3.0f)
                 numEnemy = 5
                 numPill = 5
-                enemySpeed = 0.0f
-                pillSpeed = 0.0f
+                enemySpeed = 0.25f
+                pillSpeed = 0.1f
             }
         }
 
@@ -331,7 +331,7 @@ class MainSceneView @JvmOverloads constructor(
             for (enemy in enemies) {
                 if (enemy.tube == player.tube) {
                     val dist = (enemy.positionGet() - player.positionGet()).toVector3().length()
-                    if (dist < enemy.sphere.geometry.radius + player.sphere.geometry.radius) {
+                    if (dist < (enemy.sphere.geometry.radius + player.sphere.geometry.radius)/2.0f) {
                         gameState = -1
                     }
                 }
@@ -340,7 +340,7 @@ class MainSceneView @JvmOverloads constructor(
             for (pill in pills) {
                 if (pill.tube == player.tube) {
                     val dist = (pill.positionGet() - player.positionGet()).toVector3().length()
-                    if (dist < pill.sphere.geometry.radius + player.sphere.geometry.radius) {
+                    if (dist < (pill.sphere.geometry.radius + player.sphere.geometry.radius)/2.0f) {
                         markForDelete.add(pill)
                     }
                 }
