@@ -61,7 +61,7 @@ class SceneActivity : AppCompatActivity() {
             sceneView.gameState = -1
             sceneView.level++
             if (sceneView.level > ApplicationClass.instance.level) {
-                sceneView.level = 1
+                sceneView.level = 3
             }
             sceneView.levelSet()
         }
@@ -79,8 +79,16 @@ class SceneActivity : AppCompatActivity() {
 
     @SuppressLint("DefaultLocale")
     private fun updateUI() {
+        if (sceneView.gameState != 0) return
         textView.text = String.format("%d fps", sceneView.fps)
         levelText()
+        if (sceneView.level < 3) {
+            findViewById<Button>(R.id.nextLevel).visibility = View.GONE
+            findViewById<Button>(R.id.previousLevel).visibility = View.GONE
+        } else {
+            findViewById<Button>(R.id.nextLevel).visibility = View.VISIBLE
+            findViewById<Button>(R.id.previousLevel).visibility = View.VISIBLE
+        }
     }
 
     @SuppressLint("DefaultLocale")

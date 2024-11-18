@@ -284,11 +284,12 @@ class MainSceneView @JvmOverloads constructor(
 
     override fun onFrame(frameTimeNanos: Long) {
         super.onFrame(frameTimeNanos)
+        if (gameState != 0) return
+
         val deltaTime = (frameTimeNanos - lastTimeNanos) / 1000000
         fps = (1000 / deltaTime).toInt()
         lastTimeNanos = frameTimeNanos
 
-        if (gameState != 0) return
         update(deltaTime.toFloat()/1000.0f)
     }
 
