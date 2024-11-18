@@ -5,7 +5,7 @@ This is a 3D game using Google Filament.
 
 ## Stored data
 
-There is no user stored data, apart from the level currently achieved
+There is no user data stored, apart from the level currently achieved.
 
 ## Permissions
 
