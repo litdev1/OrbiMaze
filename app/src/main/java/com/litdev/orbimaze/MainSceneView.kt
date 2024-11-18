@@ -214,7 +214,7 @@ class MainSceneView @JvmOverloads constructor(
             }
             10 -> {
                 Generate(joints, tubes).random(500, 0.5f, 3.0f)
-                numEnemy = 10
+                numEnemy = 5
                 numPill = 5
                 enemySpeed = 0.0f
                 pillSpeed = 0.0f
