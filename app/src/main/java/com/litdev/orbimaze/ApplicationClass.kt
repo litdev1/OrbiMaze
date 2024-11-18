@@ -39,8 +39,8 @@ class ApplicationClass: Application() {
         if (sharedPreferences.contains("version")) {
             firstTime = false
         }
-        val saved_version = sharedPreferences.getInt("version", 0)
-        if (saved_version > version) {
+        val savedVersion = sharedPreferences.getInt("version", 0)
+        if (savedVersion > version) {
             TODO("Version too recent")
         }
         level = sharedPreferences.getInt("level", 1)

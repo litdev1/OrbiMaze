@@ -20,15 +20,15 @@ class Orb {
     var dir: Int = 1
 
     fun build(sceneView: MainSceneView, material: MaterialInstance, color: Int, radius: Float, falloff: Float) {
-        val R = color.red / 255.0f
-        val G = color.green / 255.0f
-        val B = color.blue / 255.0f
+        val rColor = color.red / 255.0f
+        val gColor = color.green / 255.0f
+        val bColor = color.blue / 255.0f
 
-        material.setParameter("color", Colors.RgbType.SRGB, R, G, B)
+        material.setParameter("color", Colors.RgbType.SRGB, rColor, gColor, bColor)
         material.setParameter("metallic", 1.0f)
         material.setParameter("roughness", 0.0f)
         material.setParameter("reflectance", 1.0f)
-        material.setParameter("emissive", Colors.RgbType.SRGB, R, G, B)
+        material.setParameter("emissive", Colors.RgbType.SRGB, rColor, gColor, bColor)
 
         sphere = SphereNode(
             engine = sceneView.engine,
@@ -39,7 +39,7 @@ class Orb {
 
         val lightEntity = EntityManager.get().create()
         LightManager.Builder(LightManager.Type.POINT).apply {
-            color(R, G, B)
+            color(rColor, gColor, bColor)
             intensity(100_000_000.0f)
             falloff(falloff)
             castShadows(true)

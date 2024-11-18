@@ -31,10 +31,10 @@ class Tube(val joint1: Joint,
     var id: Int = 0
     var length: Float = 0.0f
     var startDirection: Vector3 = Vector3.zero()
-    lateinit var A: Vector3
-    lateinit var B: Vector3
-    lateinit var C: Vector3
-    lateinit var D: Vector3
+    lateinit var coefA: Vector3
+    lateinit var coefB: Vector3
+    lateinit var coefC: Vector3
+    lateinit var coefD: Vector3
     lateinit var renderNode: io.github.sceneview.node.RenderableNode
 
     init {
@@ -70,14 +70,14 @@ class Tube(val joint1: Joint,
         }
         val dir1 = startDirection
         val dir2 = dir1
-        A = pos1
-        B = dir1
-        C = Vector3(
+        coefA = pos1
+        coefB = dir1
+        coefC = Vector3(
             -2 * dir1.x - dir2.x + 3 * (pos2.x - pos1.x),
             -2 * dir1.y - dir2.y + 3 * (pos2.y - pos1.y),
             -2 * dir1.z - dir2.z + 3 * (pos2.z - pos1.z)
         )
-        D = Vector3(
+        coefD = Vector3(
             dir1.x + dir2.x - 2 * (pos2.x - pos1.x),
             dir1.y + dir2.y - 2 * (pos2.y - pos1.y),
             dir1.z + dir2.z - 2 * (pos2.z - pos1.z)
@@ -192,25 +192,25 @@ class Tube(val joint1: Joint,
 
     fun pointV(r: Float) : Vector3 {
         return Vector3(
-            A.x + B.x * r + C.x * r * r + D.x * r * r * r,
-            A.y + B.y * r + C.y * r * r + D.y * r * r * r,
-            A.z + B.z * r + C.z * r * r + D.z * r * r * r
+            coefA.x + coefB.x * r + coefC.x * r * r + coefD.x * r * r * r,
+            coefA.y + coefB.y * r + coefC.y * r * r + coefD.y * r * r * r,
+            coefA.z + coefB.z * r + coefC.z * r * r + coefD.z * r * r * r
         )
     }
 
     fun direction(r: Float) : Vector3 {
         return Vector3(
-            B.x + 2 * C.x * r + 3 * D.x * r * r,
-            B.y + 2 * C.y * r + 3 * D.y * r * r,
-            B.z + 2 * C.z * r + 3 * D.z * r * r
+            coefB.x + 2 * coefC.x * r + 3 * coefD.x * r * r,
+            coefB.y + 2 * coefC.y * r + 3 * coefD.y * r * r,
+            coefB.z + 2 * coefC.z * r + 3 * coefD.z * r * r
         ).normalized()
     }
 
     fun pointP(r: Float) : Position {
         return Position(
-            A.x + B.x * r + C.x * r * r + D.x * r * r * r,
-            A.y + B.y * r + C.y * r * r + D.y * r * r * r,
-            A.z + B.z * r + C.z * r * r + D.z * r * r * r
+            coefA.x + coefB.x * r + coefC.x * r * r + coefD.x * r * r * r,
+            coefA.y + coefB.y * r + coefC.y * r * r + coefD.y * r * r * r,
+            coefA.z + coefB.z * r + coefC.z * r * r + coefD.z * r * r * r
         )
     }
 

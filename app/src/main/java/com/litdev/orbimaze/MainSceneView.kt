@@ -350,7 +350,7 @@ class MainSceneView @JvmOverloads constructor(
                 removeChildNode(pill.lightNode)
                 pills.remove(pill)
             }
-            if (pills.size == 0) {
+            if (pills.isEmpty()) {
                 gameState = 1
                 level++
                 if (level > ApplicationClass.instance.maxLevel) {

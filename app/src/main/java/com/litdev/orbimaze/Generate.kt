@@ -114,7 +114,7 @@ class Generate(val joints: MutableList<Joint>,
         val jointsToRemove = mutableListOf<Joint>()
         val tubesToRemove = mutableListOf<Tube>()
         var first = true
-        while (first || jointsToRemove.size > 0 || tubesToRemove.size > 0) {
+        while (first || jointsToRemove.isNotEmpty() || tubesToRemove.isNotEmpty()) {
             first = false
             jointsToRemove.clear()
             tubesToRemove.clear()

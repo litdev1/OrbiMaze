@@ -57,7 +57,7 @@ class SceneActivity : AppCompatActivity() {
         }
 
         val nextLevel = findViewById<Button>(R.id.nextLevel)
-        nextLevel.setOnClickListener() { _ ->
+        nextLevel.setOnClickListener { _ ->
             sceneView.gameState = -1
             sceneView.level++
             if (sceneView.level > ApplicationClass.instance.level) {
@@ -67,7 +67,7 @@ class SceneActivity : AppCompatActivity() {
         }
 
         val previousLevel = findViewById<Button>(R.id.previousLevel)
-        previousLevel.setOnClickListener() { _ ->
+        previousLevel.setOnClickListener { _ ->
             sceneView.gameState = -1
             sceneView.level--
             if (sceneView.level < 1) {
