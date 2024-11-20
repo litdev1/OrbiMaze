@@ -159,7 +159,7 @@ class MainSceneView @JvmOverloads constructor(
             2 -> {
                 Generate(joints, tubes).cube(3, 3, 3, 0.1f, 0.2f)
                 numEnemy = 2
-                numPill = 1
+                numPill = 2
                 enemySpeed = 0.0f
                 pillSpeed = 0.0f
             }
@@ -213,7 +213,7 @@ class MainSceneView @JvmOverloads constructor(
                 pillSpeed = 0.1f
             }
             10 -> {
-                Generate(joints, tubes).random(500, 0.0f, 2.5f, 1.75f)
+                Generate(joints, tubes).random(300, 0.25f, 2.0f, 1.25f)
                 numEnemy = 5
                 numPill = 5
                 enemySpeed = 0.25f
@@ -228,14 +228,14 @@ class MainSceneView @JvmOverloads constructor(
         val jointMaterial = materialLoader.createColorInstance(
             color = gold,
             metallic = 1.0f,
-            roughness = 0.1f,
-            reflectance = 0.8f
+            roughness = 0.0f,
+            reflectance = 1.0f
         )
         val tubeMaterial = materialLoader.createColorInstance(
             color = silver,
             metallic = 1.0f,
-            roughness = 0.1f,
-            reflectance = 0.8f
+            roughness = 0.0f,
+            reflectance = 1.0f
         )
 
         for (tube in tubes) {

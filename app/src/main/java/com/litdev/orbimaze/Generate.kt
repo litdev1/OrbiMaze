@@ -46,7 +46,7 @@ class Generate(val joints: MutableList<Joint>,
             )
         }
         var i = 0
-        while (tubes.size < tubeNumber*count && i < 10*count) {
+        while (tubes.size < tubeNumber*count && i < 100*count) {
             i++
             val joint1 = joints[rand.nextInt(count)]
             val joint2 = joints[rand.nextInt(count)]
@@ -57,7 +57,7 @@ class Generate(val joints: MutableList<Joint>,
             for (tube in joint1.tubes) {
                 if (tube.joint1 == joint2 || tube.joint2 == joint2) {
                     duplicate = true
-                    continue
+                    break
                 }
             }
             if (!duplicate) tubes.add(Tube(joint1, joint2))

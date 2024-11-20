@@ -60,9 +60,8 @@ class SceneActivity : AppCompatActivity() {
         nextLevel.setOnClickListener { _ ->
             sceneView.gameState = -1
             sceneView.level++
-            if (sceneView.level > ApplicationClass.instance.maxLevel) { //Testing HACK
+            if (sceneView.level > ApplicationClass.instance.maxLevel) //Testing HACK
                 sceneView.level = 1
-            }
             sceneView.levelSet()
         }
 
@@ -70,9 +69,8 @@ class SceneActivity : AppCompatActivity() {
         previousLevel.setOnClickListener { _ ->
             sceneView.gameState = -1
             sceneView.level--
-            if (sceneView.level < 1) {
+            if (sceneView.level < 1)
                 sceneView.level = ApplicationClass.instance.maxLevel //Testing HACK
-            }
             sceneView.levelSet()
         }
     }
