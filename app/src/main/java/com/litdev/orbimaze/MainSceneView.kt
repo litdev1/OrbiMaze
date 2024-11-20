@@ -178,15 +178,15 @@ class MainSceneView @JvmOverloads constructor(
                 pillSpeed = 0.0f
             }
             5 -> {
-                Generate(joints, tubes).random(50, 0.5f, 10.0f)
-                        numEnemy = 3
+                Generate(joints, tubes).random(50, 0.25f, 2.0f, 1.25f)
+                numEnemy = 3
                 numPill = 3
                 enemySpeed = 0.0f
                 pillSpeed = 0.0f
             }
             6 -> {
                 Generate(joints, tubes).cube(4, 4, 4, 0.1f, 0.2f)
-                        numEnemy = 3
+                numEnemy = 3
                 numPill = 3
                 enemySpeed = 0.25f
                 pillSpeed = 0.0f
@@ -213,7 +213,7 @@ class MainSceneView @JvmOverloads constructor(
                 pillSpeed = 0.1f
             }
             10 -> {
-                Generate(joints, tubes).random(500, 0.5f, 3.0f)
+                Generate(joints, tubes).random(500, 0.0f, 2.5f, 1.75f)
                 numEnemy = 5
                 numPill = 5
                 enemySpeed = 0.25f

@@ -29,7 +29,7 @@ class Generate(val joints: MutableList<Joint>,
         tidy()
     }
 
-    fun random(count: Int, minLen: Float, maxLen: Float) {
+    fun random(count: Int, minLen: Float, maxLen: Float, tubeNumber: Float) {
         reset()
 
         val length = pow(count.toFloat(), 1 / 3.0f)
@@ -46,7 +46,7 @@ class Generate(val joints: MutableList<Joint>,
             )
         }
         var i = 0
-        while (tubes.size < count && i < 5*count) {
+        while (tubes.size < tubeNumber*count && i < 10*count) {
             i++
             val joint1 = joints[rand.nextInt(count)]
             val joint2 = joints[rand.nextInt(count)]
