@@ -2,4 +2,4 @@ This is a 3D maze game using Google Filament and not a standard game engine, so 
 
 ![OrbiMaze7](https://github.com/user-attachments/assets/61adb409-cf71-4ce6-a79c-9506f09631e9)
 
-Message if you fancy be a tester!
+Message if you fancy being a tester!
