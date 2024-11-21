@@ -31,8 +31,9 @@ class Generate(val joints: MutableList<Joint>,
 
     fun random(count: Int, minLen: Float, maxLen: Float, tubeNumber: Float) {
         reset()
+        val scale = 1.0f;
 
-        val length = pow(count.toFloat(), 1 / 3.0f)
+        val length = scale*pow(count.toFloat(), 1 / 3.0f)
 
         for (i in 0 until count) {
             joints.add(
@@ -52,7 +53,7 @@ class Generate(val joints: MutableList<Joint>,
             val joint2 = joints[rand.nextInt(count)]
             if (joint1 == joint2) continue
             val dist = Vector3.subtract(joint1.pos, joint2.pos).length()
-            if (dist < minLen || dist > maxLen) continue
+            if (dist < scale*minLen || dist > scale*maxLen) continue
             var duplicate = false
             for (tube in joint1.tubes) {
                 if (tube.joint1 == joint2 || tube.joint2 == joint2) {

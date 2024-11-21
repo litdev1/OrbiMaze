@@ -41,7 +41,7 @@ class MainSceneView @JvmOverloads constructor(
     var cameraDist = 10.0f
     var scaleFactor = 0.02f
     val cameraMinDist = 0.5f
-    val cameraMaxDist = 20.0f
+    val cameraMaxDist = 50.0f
     var cameraRot = 0.0f
     var rotationFactor = 1.0f
     val cameraDirStart = Vector3(0.0f, -0.5f, -1.0f).normalized()
@@ -213,7 +213,7 @@ class MainSceneView @JvmOverloads constructor(
                 pillSpeed = 0.1f
             }
             10 -> {
-                Generate(joints, tubes).random(300, 0.25f, 2.0f, 1.25f)
+                Generate(joints, tubes).random(250, 0.25f, 2.0f, 1.25f)
                 numEnemy = 5
                 numPill = 5
                 enemySpeed = 0.25f
