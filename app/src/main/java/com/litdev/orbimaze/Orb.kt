@@ -53,6 +53,7 @@ class Orb {
         this.tube = tube
         this.dir = dir
         this.speed = speed
+        tube.hasOrb = true
         r = 0.5f
         positionSet(tube.pointP(r))
     }

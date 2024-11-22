@@ -31,6 +31,7 @@ class Tube(val joint1: Joint,
     var id: Int = 0
     var length: Float = 0.0f
     var startDirection: Vector3 = Vector3.zero()
+    var hasOrb: Boolean = false
     lateinit var coefA: Vector3
     lateinit var coefB: Vector3
     lateinit var coefC: Vector3

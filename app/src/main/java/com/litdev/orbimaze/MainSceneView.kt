@@ -252,19 +252,19 @@ class MainSceneView @JvmOverloads constructor(
         for (i in 0..< numEnemy) {
             val enemy = Orb()
             enemy.build(this, material.createInstance(), Color.RED, 0.1f, 2.0f)
-            enemy.tubeSet(tubes.random(), 1, enemySpeed)
+            enemy.tubeSet(randomTube(), 1, enemySpeed)
             enemies.add(enemy)
         }
         pills.clear()
         for (i in 0..< numPill) {
             val pill = Orb()
             pill.build(this, material.createInstance(), Color.BLUE, 0.1f, 2.0f)
-            pill.tubeSet(tubes.random(), 1, pillSpeed)
+            pill.tubeSet(randomTube(), 1, pillSpeed)
             pills.add(pill)
         }
 
         player.build(this, material.createInstance(), Color.MAGENTA, 0.125f, 2.0f)
-        player.tubeSet(tubes.random(), 1, 0.3f)
+        player.tubeSet(randomTube(), 1, 0.3f)
         updateNextJoints()
 
         val buffer1 = readAsset("materials/emissive_colored.filamat")
@@ -287,10 +287,18 @@ class MainSceneView @JvmOverloads constructor(
         if (gameState != 0) return
 
         val deltaTime = (frameTimeNanos - lastTimeNanos) / 1000000.0f // ms
-        fps = if (deltaTime == 0.0f) 60 else (1000 / deltaTime).toInt()
+        fps = if (deltaTime == 0.0f) 60 else (1000.0f / deltaTime).toInt()
         lastTimeNanos = frameTimeNanos
 
         update(deltaTime.toFloat()/1000.0f)
+    }
+
+    fun randomTube(): Tube {
+        var tube = tubes.random()
+        while (tube.hasOrb) {
+            tube = tubes.random()
+        }
+        return tube
     }
 
     private fun readAsset(assetName: String): ByteBuffer {
