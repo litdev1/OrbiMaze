@@ -47,20 +47,6 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/nextLevel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="4dp"
-        android:background="#00000000"
-        android:padding="4dp"
-        android:minHeight="0dp"
-        android:text="Next Level"
-        android:textColor="@color/gray"
-        android:textSize="12sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toggleMode" />
-
-    <Button
         android:id="@+id/previousLevel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -72,7 +58,21 @@
         android:textColor="@color/gray"
         android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/nextLevel" />
+        app:layout_constraintTop_toBottomOf="@+id/toggleMode" />
+
+    <Button
+        android:id="@+id/nextLevel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp"
+        android:background="#00000000"
+        android:padding="4dp"
+        android:minHeight="0dp"
+        android:text="Next Level"
+        android:textColor="@color/gray"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/previousLevel" />
 
     <TextView
         android:id="@+id/infoView"

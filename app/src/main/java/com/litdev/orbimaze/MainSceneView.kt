@@ -286,8 +286,8 @@ class MainSceneView @JvmOverloads constructor(
         super.onFrame(frameTimeNanos)
         if (gameState != 0) return
 
-        val deltaTime = (frameTimeNanos - lastTimeNanos) / 1000000
-        fps = (1000 / deltaTime).toInt()
+        val deltaTime = (frameTimeNanos - lastTimeNanos) / 1000000.0f // ms
+        fps = if (deltaTime == 0.0f) 60 else (1000 / deltaTime).toInt()
         lastTimeNanos = frameTimeNanos
 
         update(deltaTime.toFloat()/1000.0f)
@@ -357,7 +357,7 @@ class MainSceneView @JvmOverloads constructor(
                     gameState = 2 //Game completed!
                     level = ApplicationClass.instance.maxLevel
                 }
-                if (ApplicationClass.instance.level < level) {
+                if (level > ApplicationClass.instance.level) {
                     ApplicationClass.instance.level = level
                     ApplicationClass.instance.save()
                 }

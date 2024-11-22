@@ -14,6 +14,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import kotlin.math.max
 
 class SceneActivity : AppCompatActivity() {
     lateinit var sceneView: MainSceneView
@@ -60,8 +61,6 @@ class SceneActivity : AppCompatActivity() {
         nextLevel.setOnClickListener { _ ->
             sceneView.gameState = -1
             sceneView.level++
-            if (sceneView.level > ApplicationClass.instance.maxLevel) //Testing HACK
-                sceneView.level = 1
             sceneView.levelSet()
         }
 
@@ -69,8 +68,6 @@ class SceneActivity : AppCompatActivity() {
         previousLevel.setOnClickListener { _ ->
             sceneView.gameState = -1
             sceneView.level--
-            if (sceneView.level < 1)
-                sceneView.level = ApplicationClass.instance.maxLevel //Testing HACK
             sceneView.levelSet()
         }
     }
@@ -80,13 +77,9 @@ class SceneActivity : AppCompatActivity() {
         if (sceneView.gameState != 0) return
         textView.text = String.format("%d fps", sceneView.fps)
         levelText()
-        if (sceneView.level < 3) {
-            findViewById<Button>(R.id.nextLevel).visibility = View.GONE
-            findViewById<Button>(R.id.previousLevel).visibility = View.GONE
-        } else {
-            findViewById<Button>(R.id.nextLevel).visibility = View.VISIBLE
-            findViewById<Button>(R.id.previousLevel).visibility = View.VISIBLE
-        }
+        findViewById<Button>(R.id.previousLevel).visibility = if (sceneView.level > 1) View.VISIBLE else View.GONE
+        findViewById<Button>(R.id.nextLevel).visibility = if (sceneView.level > 2 && sceneView.level < ApplicationClass.instance.maxLevel) View.VISIBLE else View.GONE //Testing HACK
+//        findViewById<Button>(R.id.nextLevel).visibility = if (sceneView.level < ApplicationClass.instance.level) View.VISIBLE else View.GONE
     }
 
     @SuppressLint("DefaultLocale")
