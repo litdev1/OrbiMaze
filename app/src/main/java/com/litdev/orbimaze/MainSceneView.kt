@@ -39,7 +39,7 @@ class MainSceneView @JvmOverloads constructor(
     var wait = false
     var cameraCatchup = 0.025f
     var cameraDist = 10.0f
-    var scaleFactor = 0.02f
+    var scaleFactor = 0.00005f
     val cameraMinDist = 0.5f
     val cameraMaxDist = 50.0f
     var cameraRot = 0.0f
@@ -224,7 +224,6 @@ class MainSceneView @JvmOverloads constructor(
         val gold = ContextCompat.getColor(context, R.color.gold)
         val silver = ContextCompat.getColor(context, R.color.silver)
 
-        val materialLoader = materialLoader
         val jointMaterial = materialLoader.createColorInstance(
             color = gold,
             metallic = 1.0f,
@@ -573,7 +572,7 @@ class MainSceneView @JvmOverloads constructor(
                 e: MotionEvent,
                 node: Node?
             ) {
-                cameraDist *= 1.0f - (detector.scaleFactor-1.0f)*scaleFactor
+                cameraDist *= 1.0f - (detector.currentSpan - detector.previousSpan)*scaleFactor
                 if (cameraDist < cameraMinDist) cameraDist = cameraMinDist
                 if (cameraDist > cameraMaxDist) cameraDist = cameraMaxDist
             }
