@@ -4,6 +4,7 @@ import android.app.Application
 
 class ApplicationClass: Application() {
     var firstTime: Boolean = true
+    var gameCompleted: Boolean = false
     var level: Int = 1
     val maxLevel = 10
 
@@ -30,6 +31,7 @@ class ApplicationClass: Application() {
         val editor = sharedPreferences.edit()
         editor.putInt("version", version)
         editor.putInt("level", level)
+        editor.putBoolean("gameCompleted", gameCompleted)
         editor.apply()
     }
 
@@ -43,5 +45,6 @@ class ApplicationClass: Application() {
             TODO("Version too recent")
         }
         level = sharedPreferences.getInt("level", 1)
+        gameCompleted = sharedPreferences.getBoolean("gameCompleted", false)
     }
 }

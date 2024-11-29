@@ -361,8 +361,9 @@ class MainSceneView @JvmOverloads constructor(
                 gameState = 1
                 level++
                 if (level > ApplicationClass.instance.maxLevel) {
-                    gameState = 2 //Game completed!
+                    ApplicationClass.instance.gameCompleted = true
                     level = ApplicationClass.instance.maxLevel
+                    ApplicationClass.instance.save()
                 }
                 if (level > ApplicationClass.instance.level) {
                     ApplicationClass.instance.level = level

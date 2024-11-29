@@ -31,7 +31,7 @@ class Generate(val joints: MutableList<Joint>,
 
     fun random(count: Int, minLen: Float, maxLen: Float, tubeNumber: Float) {
         reset()
-        val scale = 1.0f;
+        val scale = 1.0f
 
         val length = scale*pow(count.toFloat(), 1 / 3.0f)
 

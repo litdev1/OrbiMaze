@@ -10,4 +10,5 @@
     <string name="level2">\n\nCollect the blue orbs and avoid the red orbs.
     \n\nYou can toggle between an observation and follow mode using the top right button.
     \n\nSlow and steady to plan a route and speed for a getaway!</string>
+    <string name="win">\n\nCongratulations you have completed this game!</string>
 </resources>

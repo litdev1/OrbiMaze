@@ -88,6 +88,11 @@ class SceneActivity : AppCompatActivity() {
         when (level) {
             1 -> message += ApplicationClass.instance.getString(R.string.level1)
             2 -> message += ApplicationClass.instance.getString(R.string.level2)
+            else -> {
+                if (ApplicationClass.instance.gameCompleted) {
+                    message += ApplicationClass.instance.getString(R.string.win)
+                }
+            }
         }
         infoView.text = message
     }
