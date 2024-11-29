@@ -77,8 +77,8 @@ class SceneActivity : AppCompatActivity() {
         textView.text = String.format("%d fps", sceneView.fps)
         levelText()
         findViewById<Button>(R.id.previousLevel).visibility = if (sceneView.level > 1) View.VISIBLE else View.GONE
-        findViewById<Button>(R.id.nextLevel).visibility = if (sceneView.level > 2 && sceneView.level < ApplicationClass.instance.maxLevel) View.VISIBLE else View.GONE //Testing HACK
-//        findViewById<Button>(R.id.nextLevel).visibility = if (sceneView.level < ApplicationClass.instance.level) View.VISIBLE else View.GONE
+//        findViewById<Button>(R.id.nextLevel).visibility = if (sceneView.level > 2 && sceneView.level < ApplicationClass.instance.maxLevel) View.VISIBLE else View.GONE //Testing HACK
+        findViewById<Button>(R.id.nextLevel).visibility = if (sceneView.level < ApplicationClass.instance.level) View.VISIBLE else View.GONE
     }
 
     @SuppressLint("DefaultLocale")
