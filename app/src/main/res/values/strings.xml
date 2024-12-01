@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">OrbiMaze</string>
     <string name="level1">\n\nYou are the magenta orb.
-    \n\nThe yellow node highlights the next path your orb will take.
+    \n\nThe larger yellow node highlights the next path your orb will take.
     You can toggle this path to other connected nodes with a short tap.
     \n\nRotate the view with left/right movement and speed/slow your orb with up/down movement.
     \n\nPause your orb with a long press, and restart it with a fling.
