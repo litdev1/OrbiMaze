@@ -29,6 +29,7 @@ class Joint(val pos: Vector3) {
             stacks = stacks,
             slices = slices
         )
+        renderNode.name = id.toString()
         sceneView.addChildNode(renderNode)
     }
 }

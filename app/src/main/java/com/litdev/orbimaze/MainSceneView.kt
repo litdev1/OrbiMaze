@@ -36,6 +36,7 @@ class MainSceneView @JvmOverloads constructor(
     var numPill = 0
     val nextJoints = mutableListOf<Joint>()
     var nextJoint = 0
+    var isJointSelected = false
     var wait = false
     var cameraCatchup = 0.025f
     var cameraDist = 10.0f
@@ -450,17 +451,18 @@ class MainSceneView @JvmOverloads constructor(
             }
         }
         nextJoint = rand.nextInt(nextJoints.size)
+        isJointSelected = false
     }
 
     fun updateNextJoint() {
         highlight.positionSet(nextJoints[nextJoint].pos.toFloat3())
         for (orb in secondaryHighlights) {
-            orb.positionSet(nextJoints[nextJoint].pos.toFloat3())
+            orb.positionSet(nextJoints[nextJoint].pos.toFloat3(), nextJoints[nextJoint].id)
         }
         var i = 0
         for (joint in nextJoints) {
             if (joint != nextJoints[nextJoint]) {
-                secondaryHighlights[i++].positionSet(joint.pos.toFloat3())
+                secondaryHighlights[i++].positionSet(joint.pos.toFloat3(), joint.id)
             }
         }
     }
@@ -492,7 +494,19 @@ class MainSceneView @JvmOverloads constructor(
                 e: MotionEvent,
                 node: Node?
             ) {
-
+                if (node != null) {
+                    val a = 1
+                }
+                if (node == null) return
+                for (i in 0..< nextJoints.size) {
+                    val joint = nextJoints[i]
+                    if (joint.renderNode.name == node.name)
+                    {
+                        nextJoint = i
+                        isJointSelected = true
+                        tapCount++
+                    }
+                }
             }
 
             override fun onFling(
@@ -614,6 +628,10 @@ class MainSceneView @JvmOverloads constructor(
                 e: MotionEvent,
                 node: Node?
             ) {
+                if (isJointSelected) {
+                    isJointSelected = false
+                    return
+                }
                 nextJoint = (nextJoint + 1) % nextJoints.size
                 tapCount++
             }

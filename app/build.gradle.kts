@@ -11,8 +11,8 @@ android {
         applicationId = "com.litdev.orbimaze"
         minSdk = 24
         targetSdk = 35
-        versionCode = 9
-        versionName = "1.0"
+        versionCode = 11
+        versionName = "1.1"
         ndk { debugSymbolLevel = "FULL" }
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -49,7 +49,6 @@ dependencies {
 
     // SceneView
     implementation("io.github.sceneview:sceneview:2.2.1")
-
 
     // Filament
     implementation("com.google.android.filament:filament-android:1.52.0")

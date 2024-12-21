@@ -58,9 +58,11 @@ class Orb {
         positionSet(tube.pointP(r))
     }
 
-    fun positionSet(position: Position) {
+    fun positionSet(position: Position, id:Int = -1) {
         sphere.position = position
         lightNode.position = position
+        sphere.name = id.toString()
+        lightNode.name = id.toString()
     }
 
     fun positionGet(): Position {
