@@ -455,7 +455,7 @@ class MainSceneView @JvmOverloads constructor(
     }
 
     fun updateNextJoint() {
-        highlight.positionSet(nextJoints[nextJoint].pos.toFloat3())
+        highlight.positionSet(nextJoints[nextJoint].pos.toFloat3(), nextJoints[nextJoint].id)
         for (orb in secondaryHighlights) {
             orb.positionSet(nextJoints[nextJoint].pos.toFloat3(), nextJoints[nextJoint].id)
         }
