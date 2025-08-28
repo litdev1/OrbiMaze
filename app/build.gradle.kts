@@ -5,13 +5,13 @@ plugins {
 
 android {
     namespace = "com.litdev.orbimaze"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.litdev.orbimaze"
         minSdk = 24
-        targetSdk = 35
-        versionCode = 13
+        targetSdk = 36
+        versionCode = 15
         versionName = "1.1"
         ndk { debugSymbolLevel = "FULL" }
 
