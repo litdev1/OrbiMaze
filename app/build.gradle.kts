@@ -11,7 +11,7 @@ android {
         applicationId = "com.litdev.orbimaze"
         minSdk = 24
         targetSdk = 36
-        versionCode = 15
+        versionCode = 16
         versionName = "1.1"
         ndk { debugSymbolLevel = "FULL" }
 
@@ -51,7 +51,7 @@ dependencies {
     implementation("io.github.sceneview:sceneview:2.2.1")
 
     // Filament
-    implementation("com.google.android.filament:filament-android:1.52.0")
-    implementation("com.google.android.filament:filament-utils-android:1.52.0")
-    implementation("com.google.android.filament:gltfio-android:1.52.0")
+    implementation("com.google.android.filament:filament-android:1.57.1")
+    implementation("com.google.android.filament:filament-utils-android:1.57.1")
+    implementation("com.google.android.filament:gltfio-android:1.57.1")
 }
