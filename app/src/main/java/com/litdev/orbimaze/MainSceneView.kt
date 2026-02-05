@@ -290,7 +290,7 @@ class MainSceneView @JvmOverloads constructor(
         fps = if (deltaTime == 0.0f) 60 else (1000.0f / deltaTime).toInt()
         lastTimeNanos = frameTimeNanos
 
-        update(deltaTime.toFloat()/1000.0f)
+        update(deltaTime /1000.0f)
     }
 
     fun randomTube(): Tube {
