@@ -13,12 +13,12 @@ kotlin {
 
 android {
     namespace = "com.litdev.orbimaze"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.litdev.orbimaze"
         minSdk = 24
-        targetSdk = 36
+        targetSdk = 37
         versionCode = 18
         versionName = "1.1"
         ndk { debugSymbolLevel = "FULL" }
