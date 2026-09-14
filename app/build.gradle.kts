@@ -19,7 +19,7 @@ android {
         applicationId = "com.litdev.orbimaze"
         minSdk = 24
         targetSdk = 37
-        versionCode = 18
+        versionCode = 19
         versionName = "1.1"
         ndk { debugSymbolLevel = "FULL" }
 
