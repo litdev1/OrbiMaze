@@ -19,7 +19,7 @@ android {
         applicationId = "com.litdev.orbimaze"
         minSdk = 24
         targetSdk = 37
-        versionCode = 20
+        versionCode = 21
         versionName = "1.1"
         ndk { debugSymbolLevel = "FULL" }
 
@@ -34,6 +34,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
     compileOptions {
