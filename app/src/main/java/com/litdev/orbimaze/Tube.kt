@@ -49,8 +49,8 @@ class Tube(val joint1: Joint,
                   segments: Int,
                   sides: Int,
                   radius: Float) {
-        val vertices: FloatArray = FloatArray((segments + 1) * sides * 7)
-        val indices: IntArray = IntArray(segments * sides * 2 * 3)
+        val vertices = FloatArray((segments + 1) * sides * 7)
+        val indices = IntArray(segments * sides * 2 * 3)
         val boundingBox = Box()
 
         val pos1 = joint1.pos
@@ -70,18 +70,17 @@ class Tube(val joint1: Joint,
             tangent = Vector3.cross(startDirection, Vector3(1.0f, 0.0f, 0.0f))
         }
         val dir1 = startDirection
-        val dir2 = dir1
         coefA = pos1
         coefB = dir1
         coefC = Vector3(
-            -2 * dir1.x - dir2.x + 3 * (pos2.x - pos1.x),
-            -2 * dir1.y - dir2.y + 3 * (pos2.y - pos1.y),
-            -2 * dir1.z - dir2.z + 3 * (pos2.z - pos1.z)
+            -3 * dir1.x + 3 * (pos2.x - pos1.x),
+            -3 * dir1.y + 3 * (pos2.y - pos1.y),
+            -3 * dir1.z + 3 * (pos2.z - pos1.z)
         )
         coefD = Vector3(
-            dir1.x + dir2.x - 2 * (pos2.x - pos1.x),
-            dir1.y + dir2.y - 2 * (pos2.y - pos1.y),
-            dir1.z + dir2.z - 2 * (pos2.z - pos1.z)
+            2 * dir1.x - 2 * (pos2.x - pos1.x),
+            2 * dir1.y - 2 * (pos2.y - pos1.y),
+            2 * dir1.z - 2 * (pos2.z - pos1.z)
         )
         length = Vector3.subtract(pos1, pos2).length() //Approximate length of tube, can't be bothered with integral
 
@@ -90,7 +89,7 @@ class Tube(val joint1: Joint,
         val max = Vector3(-Float.MAX_VALUE, -Float.MAX_VALUE, -Float.MAX_VALUE)
 
         for (i in 0..segments) {
-            var r = i.toFloat() / segments //parametric distance along the curve
+            val r = i.toFloat() / segments //parametric distance along the curve
             val radScale = radius * (0.25f + 0.75f * pow(2 * abs(r - 0.5f), 2.0f))
             val pos = pointV(r) //position vector
             val dir = direction(r) //direction vector
@@ -98,7 +97,7 @@ class Tube(val joint1: Joint,
             if (Vector3.dot(rad, rad) == 0.0f) {
                 TODO("Should never happen")
             }
-            for (j in 0..sides - 1) {
+            for (j in 0..<sides) {
                 val angle = j.toFloat() / sides * 360
                 val rot = Quaternion.axisAngle(dir, angle) //rotation about direction
                 val radDir = Quaternion.rotateVector(rot, rad)

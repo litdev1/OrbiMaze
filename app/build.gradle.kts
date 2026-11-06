@@ -2,7 +2,6 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
 }
 
 kotlin {
@@ -19,8 +18,8 @@ android {
         applicationId = "com.litdev.orbimaze"
         minSdk = 24
         targetSdk = 37
-        versionCode = 22
-        versionName = "1.2"
+        versionCode = 23
+        versionName = "1.3"
         ndk { debugSymbolLevel = "FULL" }
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

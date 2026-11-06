@@ -1,6 +1,7 @@
 package com.litdev.orbimaze
 
 import android.app.Application
+import androidx.core.content.edit
 
 class ApplicationClass: Application() {
     var firstTime: Boolean = true
@@ -28,11 +29,11 @@ class ApplicationClass: Application() {
 
     fun save() {
         val sharedPreferences = getSharedPreferences("Stored", MODE_PRIVATE)
-        val editor = sharedPreferences.edit()
-        editor.putInt("version", version)
-        editor.putInt("level", level)
-        editor.putBoolean("gameCompleted", gameCompleted)
-        editor.apply()
+        sharedPreferences.edit {
+            putInt("version", version)
+            putInt("level", level)
+            putBoolean("gameCompleted", gameCompleted)
+        }
     }
 
     fun load() {

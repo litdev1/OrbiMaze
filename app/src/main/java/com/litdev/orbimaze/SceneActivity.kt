@@ -34,9 +34,9 @@ class SceneActivity : AppCompatActivity() {
             findViewById(R.id.main)
         )
 
-        sceneView = findViewById<MainSceneView>(R.id.sceneView)
-        textView = findViewById<TextView>(R.id.fpsView)
-        infoView = findViewById<TextView>(R.id.infoView)
+        sceneView = findViewById(R.id.sceneView)
+        textView = findViewById(R.id.fpsView)
+        infoView = findViewById(R.id.infoView)
 
         val handler = Handler(Looper.getMainLooper())
         val updateRunnable = object : Runnable {
